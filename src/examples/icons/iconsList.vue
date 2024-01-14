@@ -2,6 +2,7 @@
   <div>
     <el-alert title="阿里图标库" type="info" :closable="false">
       <a
+        target="_blank"
         href="https://www.iconfont.cn/manage/index?spm=a313x.home_index.i3.22.49493a81f23yON&manage_type=myprojects&projectId=4380660"
         >link</a
       >
@@ -30,8 +31,8 @@
     return `<SvgIcon :icon="${str}"></SvgIcon>`
   }
   const urls = [
-    // 'https://at.alicdn.com/t/c/font_4380660_r3zwauwij5l.js',
-    iconfontURL
+    iconfontURL,
+    'https://at.alicdn.com/t/c/font_4380660_r3zwauwij5l.js'
   ]
   const request = async (urls: string[]) => {
     for (let i = 0; i < urls.length; i++) {
