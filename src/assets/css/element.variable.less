@@ -1,0 +1,51 @@
+html._rise_ {
+  // el-alert
+  .el-alert--info {
+    --el-alert-bg-color: var(--el-color-info-light-5);
+  }
+  // el-menu
+  #app .el-menu,
+  .self-el-popper {
+    --el-menu-text-color: var(--nav-text-color);
+    --el-menu-active-color: var(--nav-active-color);
+    --el-menu-hover-color: var(--nav-hover-color);
+    --el-menu-bg-color: var(--main-bg-color);
+    --el-menu-hover-bg-color: none;
+    --el-menu-item-height: var(--nav-item-height);
+    --el-menu-item-font-size: 15px;
+    --el-menu-base-level-padding: 1em; // menu基础缩进
+    --el-menu-level-padding: 1em; // menu层级缩进倍数
+  }
+}
+
+html.default {
+  --el-dropdown-menu-box-shadow: none;
+  --el-bg-color: @main-bg-color-default;
+  --el-bg-color-page: lighten(@main-bg-color-default, 5%);
+  --el-bg-color-overlay: lighten(@main-bg-color-default, 15%);
+  --el-text-color-primary: #e5eaf3;
+  // --el-mask-color: lighten(@main-bg-color-default, 15%);
+  // --el-mask-color-extra-light: lighten(@main-bg-color-default, 25%);
+  --el-text-color-regular: #e5eaf3;
+  --el-border-color: lighten(@main-bg-color-default, 25%);
+  --el-border-color-light: lighten(@main-bg-color-default, 5%);
+  --el-border-color-lighter: lighten(@main-bg-color-default, 15%);
+  --el-border-color-hover: var(--el-border-color-lighter);
+  --el-border-color-dark: darken(@main-bg-color-default, 5%);
+  --el-border-color-darker: darken(@main-bg-color-default, 10%);
+  --el-fill-color: var(--main-bg-color);
+  --el-fill-color-light: lighten(@main-bg-color-default, 5%);
+  --el-fill-color-lighter: lighten(@main-bg-color-default, 15%);
+  --el-fill-color-dark: darken(@main-bg-color-default, 5%);
+  --el-fill-color-darker: darken(@main-bg-color-default, 10%);
+  --el-fill-color-blank: @main-bg-color-default;
+  // --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),0px 8px 20px rgba(0, 0, 0, 0.08);
+  // --el-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.12);
+  // --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.12);
+  // --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.08),0px 12px 32px rgba(0, 0, 0, 0.12),0px 8px 16px -8px rgba(0, 0, 0, 0.16);
+}
+
+html.dark {
+  --el-border-color-light: lighten(@main-bg-color-dark, 5%);
+  --el-bg-color-overlay: @main-bg-color-dark;
+}

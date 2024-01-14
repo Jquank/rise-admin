@@ -1,0 +1,42 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Inter, 'Helvetica Neue', Helvetica, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 15px;
+  height: 100%;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  height: 100%;
+}
+
+li {
+  list-style: none;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+// vue-grid-layout拖动时的背景色
+.vue-grid-layout .vue-grid-item.vue-grid-placeholder {
+  background: var(--el-color-primary-light-3);
+}
+
+// loading遮罩层
+html .el-loading-mask {
+  background-color: transparent;
+}

@@ -1,0 +1,91 @@
+// 基本margin和padding
+@distance-list: 5 10 15 18 20;
+each(@distance-list, {
+  .margin-@{value} {
+    margin: @value*1px;
+  }
+  .ml-@{value} {
+    margin-left: @value*1px;
+  }
+  .mr-@{value} {
+    margin-right: @value*1px;
+  }
+  .mt-@{value} {
+    margin-top: @value*1px;
+  }
+  .mb-@{value} {
+    margin-bottom: @value*1px;
+  }
+  .padding-@{value} {
+    padding: @value*1px;
+  }
+  .pl-@{value} {
+    padding-left: @value*1px;
+  }
+  .pr-@{value} {
+    padding-right: @value*1px;
+  }
+  .pt-@{value} {
+    padding-top: @value*1px;
+  }
+  .pb-@{value} {
+    padding-bottom: @value*1px;
+  }
+
+});
+
+// 基本字体加粗
+@font-weight-list: 400 500 600 700;
+each(@font-weight-list, {
+  .font-weight-@{value} {
+    font-weight: @value;
+  }
+});
+
+// 主背景色
+.bg-main {
+  background-color: var(--main-bg-color);
+}
+
+// transition基本动画
+.box-enter-active {
+  transition: all 0.7s ease-in-out;
+}
+.box-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+// iconfont
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+// 单行省略号
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// flex布局下的el-table高度自适应
+.auto-height-table-box {
+  flex: 1;
+  height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-bg-color);
+  .el-table {
+    flex: 1;
+    // .el-table__inner-wrapper {
+    //   &::before {
+    //     width: 0;
+    //     height: 0;
+    //   }
+    // }
+  }
+}

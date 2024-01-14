@@ -1,0 +1,6 @@
+auto-imports.d.ts
+components.d.ts
+vscodesetting.json
+
+node_modules
+dist

@@ -1,0 +1,49 @@
+html._rise_ {
+  --nav-item-height: 50px;
+  // 主题色，默认同--el-color-primary，除element组件外的，请优先使用这个变量
+  --main-color-primary: var(--el-color-primary);
+  color: var(--main-font-color, #fff);
+  --nav-hover-color: var(--el-color-primary-light-3); // 导航菜单文字hover颜色
+  --nav-active-color: var(--el-color-primary); // 导航菜单文字active颜色
+}
+
+html.default {
+  --main-font-color: #fff; // 主字体色
+  --main-bg-color: @main-bg-color-default; // 主背景色
+  --bg-fill-color: darken(@main-bg-color-default, 5%);
+  // 导航子菜单背景色
+  --nav-inline-bg-color: lighten(@main-bg-color-default, 2%);
+  --nav-text-color: @main-bg-color-light; // 导航菜单文字颜色
+
+  --header-text-color: @main-bg-color-light; // header文字颜色
+  --header-bg-color: @main-bg-color-default; // header背景色
+  --section-bg-color: lighten(@main-bg-color-default, 6%); // 主内容块背景色
+  //border-shadow-color
+  --border-shadow-color: darken(@main-bg-color-default, 8%);
+}
+
+html.light {
+  --main-font-color: @main-bg-color-dark; // 主字体色
+  --main-bg-color: @main-bg-color-light; // 主背景色
+  --bg-fill-color: darken(@main-bg-color-light, 5%);
+  --nav-inline-bg-color: darken(@main-bg-color-light, 2%); // 导航子菜单背景色
+  --nav-text-color: @main-bg-color-dark; // 导航菜单文字颜色
+
+  --header-text-color: @main-bg-color-dark; // header文字颜色
+  --header-bg-color: @main-bg-color-light; // header背景色
+  --section-bg-color: darken(@main-bg-color-light, 5%); // 主内容块背景色
+  --border-shadow-color: darken(@main-bg-color-light, 8%); //border-shadow-color
+}
+
+html.dark {
+  --main-font-color: @main-bg-color-light; // 主字体色
+  --main-bg-color: @main-bg-color-dark; // 主背景色
+  --bg-fill-color: lighten(@main-bg-color-dark, 5%);
+  --nav-inline-bg-color: lighten(@main-bg-color-dark, 2%); // 导航子菜单背景色
+  --nav-text-color: @main-bg-color-light; // 导航菜单文字颜色
+
+  --header-text-color: @main-bg-color-light; // header文字颜色
+  --header-bg-color: @main-bg-color-dark; // header背景色
+  --section-bg-color: lighten(@main-bg-color-dark, 5%); // 主内容块背景色
+  --border-shadow-color: darken(@main-bg-color-dark, 8%); //border-shadow-color
+}

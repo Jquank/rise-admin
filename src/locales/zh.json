@@ -1,0 +1,13 @@
+{
+  "common": {
+    "home": "首页",
+    "about": "关于",
+    "tobeCoded": "待开发",
+    "signIn": "登录",
+    "signUp": "注册",
+    "loginOut": "退出登录",
+    "expand": "展开",
+    "collapse": "收起",
+    "icons": "字体图标"
+  }
+}

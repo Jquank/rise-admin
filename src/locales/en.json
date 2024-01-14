@@ -1,0 +1,13 @@
+{
+  "common": {
+    "home": "home",
+    "about": "About",
+    "tobeCoded": "To be coded",
+    "signIn": "sign in",
+    "signUp": "sign out",
+    "loginOut": "Login Out",
+    "expand": "expand",
+    "collapse": "collapse",
+    "icons": "icons"
+  }
+}
