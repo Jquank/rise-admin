@@ -8,25 +8,14 @@ interface LoginParams {
 
 // 模拟token，正常是一串数字
 export const getToken = (params: LoginParams) => {
-  return $http.ex('/api/getToken', params)
+  return $http.post('/rise/user/getToken', params)
 }
 export const getUserInfo = () => {
-  const token = JSON.parse(sessionStorage.getItem('token') || 'null')
-  if (!token) {
-    console.error('token is error')
-  }
-  const res = token
-    ? {
-        username: token.username,
-        roles: [token.username]
-      }
-    : {}
-  return $http.ex('/api/getUserInfo', res)
+  return $http.post('/rise/user/getUserInfo')
 }
 
-// 真实接口无法推断类型，这里需要借助插件配合后端自动生成接口调用函数，todo：写一个vscode插件配合swagger生成类型接口函数
 export const getRolesList = () => {
-  return $http.get('/role/list')
+  return $http.get('/rise/role')
 }
 
 export const getMenuByRole = (role: string[]) => {
@@ -38,6 +27,5 @@ export const getMenuByRole = (role: string[]) => {
       localStorage.getItem('menuAuth-user') || '["home", "menu-auth"]'
     )
   }
-
-  return $http.ex('/api/getMenuByRole', res)
+  return res
 }

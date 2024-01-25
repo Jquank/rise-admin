@@ -26,8 +26,8 @@
   const commonStore = useCommonStore()
   const auth = ref(commonStore.userInfo.username)
   const radioChange = async (value: string | number | boolean) => {
-    let token = await getToken({ username: value as string, passward: '' })
-    sessionStorage.setItem('token', JSON.stringify(token))
+    const { data } = await getToken({ username: value as string, passward: '' })
+    sessionStorage.setItem('token', data)
     router.go(0)
   }
 </script>
@@ -42,4 +42,3 @@
     justify-content: center;
   }
 </style>
-@/api/modules/user/login

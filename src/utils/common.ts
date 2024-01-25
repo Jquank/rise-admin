@@ -91,7 +91,7 @@ export const deleteNodeFromTreeList = (
  */
 export const getCheckedKeysByProp = (
   arr: ArrItemType[],
-  prop: string,
+  prop: keyof Omit<ArrItemType, 'children'>,
   fn: (arg: ArrItemType) => boolean
 ): string[] => {
   return arr.reduce((pre: string[], cur) => {

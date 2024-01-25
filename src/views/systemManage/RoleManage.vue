@@ -2,9 +2,9 @@
   <div class="role-manage">
     <el-table border :data="tableData" v-loading="loading">
       <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="roleName" label="角色名称" align="center" />
-      <el-table-column prop="startTime" label="创建时间" align="center" />
-      <el-table-column prop="notes" label="描述"></el-table-column>
+      <el-table-column prop="role" label="角色名称" align="center" />
+      <el-table-column prop="createTime" label="创建时间" align="center" />
+      <el-table-column prop="desc" label="描述"></el-table-column>
       <el-table-column label="操作" width="140" align="center">
         <template #default="scope">
           <el-button type="primary" size="small" @click="editRole(scope.row)"
@@ -43,12 +43,13 @@
   import { useRouter } from 'vue-router'
   import { getRolesList, getMenuByRole } from '@/api/user'
   import { deleteNodeFromTreeList, getCheckedKeysByProp } from '@/utils/common'
-  import type { ElTree } from 'element-plus'
+  import { ElMessage, type ElTree } from 'element-plus'
   import { cloneDeep } from 'lodash-es'
+  import { roleApi, RoleType } from '@/_api/index'
 
   const router = useRouter()
   const loading = ref(true)
-  const tableData = ref([])
+  const tableData = ref<RoleType.Res_schemasRole[]>([])
   const dialogVisible = ref(false)
   const treeKey = ref(new Date() + '')
   const treeRef = ref<InstanceType<typeof ElTree>>()
@@ -58,7 +59,7 @@
     children: 'children',
     disabled: 'disabled'
   }
-  let currentRole = ''
+  let currentRoleId = ''
 
   let d = cloneDeep(
     router.options.routes.filter((v) => v.name === 'layout')[0].children || []
@@ -66,32 +67,35 @@
   deleteNodeFromTreeList(d, false, 'meta.show')
   const routerOptionsClone = d
 
-  getRolesList()
-    .then((res) => {
+  const getRoleList = async () => {
+    try {
+      const { data } = await roleApi.getRole()
+      tableData.value = data
+    } finally {
       loading.value = false
-      tableData.value = res.data
-    })
-    .catch(() => {
-      loading.value = false
-    })
+    }
+  }
+  getRoleList()
 
-  const editRole = async (item: { role: string }) => {
-    currentRole = item.role
-    const auth = await getMenuByRole([item.role])
-    // !auth.length ? true : auth.includes(item.name)模拟代码，真实为：auth.includes(item.name)
+  const editRole = async (row: RoleType.Res_schemasRole) => {
+    currentRoleId = row.id + ''
     defaultCheckedKeys.value = getCheckedKeysByProp(
       routerOptionsClone,
       'name',
       (item) =>
         (!item.children || !item.children.length) &&
-        (!auth.length ? true : auth.includes(item.name))
+        row.menuAuth.includes(item.name)
     )
     dialogVisible.value = true
     treeKey.value = new Date() + ''
   }
-  const confirm = () => {
+  const confirm = async () => {
     let keys = treeRef.value!.getCheckedKeys(true)
-    localStorage.setItem(`menuAuth-${currentRole}`, JSON.stringify(keys))
-    dialogVisible.value = false
+    const { code, message } = await roleApi.putRoleMenuById(currentRoleId, keys)
+    if (code === 0) {
+      ElMessage.success(message)
+      dialogVisible.value = false
+      getRoleList()
+    }
   }
 </script>

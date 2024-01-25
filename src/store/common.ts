@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { getUserInfo, getMenuByRole } from '@/api/user'
+import { getMenuByRole } from '@/api/user'
+import { userApi, roleApi } from '@/_api/index'
 
 export const useCommonStore = defineStore('common', () => {
   // 折叠菜单标识
@@ -22,7 +23,8 @@ export const useCommonStore = defineStore('common', () => {
   // 获取用户信息和菜单权限
   async function getUserInfoAndAuth() {
     try {
-      userInfo.value = await getUserInfo()
+      const { data } = await userApi.getUser()
+      userInfo.value = data
       let menuAuth: string[] = []
       if (userInfo.value.roles) {
         menuAuth = await getMenuByRole(userInfo.value.roles)

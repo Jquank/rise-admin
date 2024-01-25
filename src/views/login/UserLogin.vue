@@ -8,8 +8,9 @@
           <el-option label="admin" value="admin" type="info"></el-option>
           <el-option label="user" value="user" type="info"></el-option>
         </el-select>
-        <el-input v-model="passward" class="passward"></el-input>
+        <el-input v-model="password" class="password"></el-input>
       </div>
+      <p class="error-message ellipsis">{{ errorMessage }}</p>
       <el-button @click="login" type="primary" class="login-btn"
         >登录</el-button
       >
@@ -20,20 +21,28 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import { getToken } from '@/api/user'
+  // import { getToken } from '@/api/user'
   import { useCommonStore } from '@/store/common.ts'
+  import $http from '@/utils/http'
+  import { userApi } from '@/_api/index'
 
   const commonStore = useCommonStore()
   const router = useRouter()
   const username = ref('admin')
-  const passward = ref('')
+  const password = ref('')
+  let errorMessage = ref('')
   const login = async () => {
     const params = {
       username: username.value,
-      passward: passward.value
+      password: password.value
     }
-    let token = await getToken(params)
-    sessionStorage.setItem('token', JSON.stringify(token))
+    let { code, data, message } = await userApi.postUser(params)
+    if (code < 0) {
+      errorMessage.value = message
+      return
+    }
+    $http.defaults.headers.common['Authorization'] = data
+    sessionStorage.setItem('token', data)
     commonStore.initRouterFlag = false
     router.replace({ path: '/home' })
   }
@@ -210,11 +219,19 @@
       display: flex;
       flex-direction: column;
     }
-    .passward {
+    .password {
       margin-top: 20px;
     }
+    .error-message {
+      height: 20px;
+      line-height: 20px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--el-color-error);
+      text-align: center;
+    }
     .login-btn {
-      margin-top: 40px;
+      margin-top: 10px;
     }
   }
 </style>
