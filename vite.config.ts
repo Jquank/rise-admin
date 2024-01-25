@@ -32,5 +32,18 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['element-plus/es/components/**/style/css']
+  },
+  server: {
+    proxy: {
+      '/mock': {
+        target: 'https://mock.mengxuegu.com/mock/623ec0649a111d2ee2cb4b5f',
+        changeOrigin: true
+      }
+      // '/mock': {
+      //   target: 'http://localhost:3000/api',
+      //   changeOrigin: true,
+      //   rewrite: (path) => path.replace(/^\/mock/, '')
+      // }
+    }
   }
 })

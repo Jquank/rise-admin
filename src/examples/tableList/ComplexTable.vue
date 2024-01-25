@@ -93,11 +93,11 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import GridCollapse from '@/components/GridCollapse.vue'
-  import { getStandardList } from '@/api/modules/listPage/standardList'
+  import { listApi, ListType } from '@/api/index'
   import ListPagination from '@/components/ListPagination.vue'
 
   const router = useRouter()
-  const tableData = ref([])
+  const tableData = ref<ListType.Res_getList[]>([])
   let pageParams: PageParams
   const searchModel = reactive({
     value1: '',
@@ -114,7 +114,8 @@
     if (page) pageParams = page
     showTableLoading.value = true
     let params = Object.assign({}, pageParams, searchModel)
-    return getStandardList(params)
+    return listApi
+      .getList(params)
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data

@@ -57,10 +57,10 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import GridCollapse from '@/components/GridCollapse.vue'
-  import { getStandardList } from '@/api/modules/listPage/standardList'
+  import { listApi, ListType } from '@/api/index'
 
   const router = useRouter()
-  const tableData = ref([])
+  const tableData = ref<ListType.Res_getList[]>([])
   const searchModel = reactive({
     value1: '',
     value2: '',
@@ -78,11 +78,11 @@
       { currentPage: 1, pageSize: 15 },
       searchModel
     )
-    return getStandardList(params)
+    return listApi
+      .getList(params)
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data
-        return 40
       })
       .catch(() => {
         showTableLoading.value = false
@@ -100,9 +100,13 @@
     flex-direction: column;
     height: 100%;
     .card-list {
+      min-height: 200px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 18px;
+    }
+    .el-affix--fixed .grid-collapse-box {
+      border-bottom: 1px solid var(--el-border-color-light);
     }
     .grid-collapse-box {
       padding: 18px 12px 0;
