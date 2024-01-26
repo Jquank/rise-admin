@@ -1,27 +1,29 @@
 <template>
-  <div class="detail padding-18 bg-main">
-    <el-page-header @back="$router.go(-1)" class="pb-10">
-      <template #icon>
-        <SvgIcon icon="arrow-left"></SvgIcon>
-      </template>
-      <template #content>
-        <span class="font-weight-600">基本详情页</span>
-      </template>
-    </el-page-header>
-    <el-collapse v-model="activeNames">
-      <el-collapse-item
-        v-for="(item, index) in data"
-        :key="index"
-        :title="item.title"
-        :name="index"
-      >
-        <el-row>
-          <el-col v-for="(v, index) in item.content" :key="index" :span="8">
-            <div>{{ v.key + ': ' + v.value }}</div>
-          </el-col>
-        </el-row>
-      </el-collapse-item>
-    </el-collapse>
+  <div class="list-detail bg-main">
+    <el-scrollbar class="padding-18">
+      <el-page-header @back="$router.go(-1)" class="pb-10">
+        <template #icon>
+          <SvgIcon icon="arrow-left"></SvgIcon>
+        </template>
+        <template #content>
+          <span class="font-weight-600">基本详情页</span>
+        </template>
+      </el-page-header>
+      <el-collapse v-model="activeNames">
+        <el-collapse-item
+          v-for="(item, index) in data"
+          :key="index"
+          :title="item.title"
+          :name="index"
+        >
+          <el-row>
+            <el-col v-for="(v, index) in item.content" :key="index" :span="8">
+              <div>{{ v.key + ': ' + v.value }}</div>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -40,3 +42,14 @@
   })
   const activeNames = ref(data.map((_, i) => i))
 </script>
+
+<style lang="less">
+  .standrad-list .list-detail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    z-index: 3;
+  }
+</style>

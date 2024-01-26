@@ -90,7 +90,7 @@
   }
   listSerach()
   const view = (row: { id: number }) => {
-    router.push({ name: 'complex-table-detail', params: { id: row.id } })
+    router.push({ name: 'card-list-detail', params: { id: row.id } })
   }
 </script>
 

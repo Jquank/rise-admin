@@ -8,6 +8,7 @@
       <el-watermark
         content="watermark"
         :font="font"
+        :z-index="5000"
         :offset="[50, 50]"
         class="layout-right"
       >
@@ -47,6 +48,7 @@
   import { useCommonStore } from '@/store/common.ts'
 
   const route = useRoute()
+
   const commonStore = useCommonStore()
   const font = reactive({
     fontSize: 18,
