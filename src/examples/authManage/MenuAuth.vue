@@ -1,6 +1,6 @@
 <template>
   <div class="menu-auth">
-    <h3>点击下方按钮切换角色</h3>
+    <h3>点击下方按钮切换账户</h3>
     <el-radio-group
       style="
         width: 100%;
@@ -20,14 +20,12 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import { useCommonStore } from '@/store/common'
-  import { getToken } from '@/api/user'
   import { useRouter } from 'vue-router'
   const router = useRouter()
   const commonStore = useCommonStore()
   const auth = ref(commonStore.userInfo.username)
   const radioChange = async (value: string | number | boolean) => {
-    let token = await getToken({ username: value as string, passward: '' })
-    sessionStorage.setItem('token', JSON.stringify(token))
+    sessionStorage.setItem('token', value as string)
     router.go(0)
   }
 </script>

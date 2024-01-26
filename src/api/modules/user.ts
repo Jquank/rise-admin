@@ -30,10 +30,13 @@ class User {
 
   getUserMenu(data: string[]): Promise<ResponseType<typeof res>> {
     const token = sessionStorage.getItem('token')
+    const storeageRes = JSON.parse(
+      localStorage.getItem(`role-${token}-menu`) || 'null'
+    )
     const res = token === 'admin' ? [] : ['home', 'menu-auth']
     return Promise.resolve({
       code: 0,
-      data: res,
+      data: storeageRes || res,
       message: '成功'
     })
   }
