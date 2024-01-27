@@ -21,7 +21,6 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  // import { getToken } from '@/api/user'
   import { useCommonStore } from '@/store/common.ts'
   import $http from '@/utils/http'
   import { userApi } from '@/api/index'

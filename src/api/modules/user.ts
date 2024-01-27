@@ -28,7 +28,7 @@ class User {
     })
   }
 
-  getUserMenu(data: string[]): Promise<ResponseType<typeof res>> {
+  getUserMenu(_: string[]): Promise<ResponseType<typeof res>> {
     const token = sessionStorage.getItem('token')
     const storeageRes = JSON.parse(
       localStorage.getItem(`role-${token}-menu`) || 'null'

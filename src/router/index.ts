@@ -56,6 +56,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  document.title = to.meta.title
   if (!routerImport.length) {
     await getRouterAsync()
     // 挂载全数据到routes.options上

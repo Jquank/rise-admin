@@ -38,17 +38,13 @@
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i]
       try {
-        let res = await $http.get(
-          url,
-          {},
-          {
-            baseURL: '',
-            withCredentials: false,
-            headers: {
-              Authorization: null
-            }
+        let res = await $http.get(url, {
+          baseURL: '',
+          withCredentials: false,
+          headers: {
+            Authorization: null
           }
-        )
+        })
         if (res && typeof res === 'string') {
           // eval(res)
           let regexp = /id="icon-(.*?)"/g
