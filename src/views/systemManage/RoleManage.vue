@@ -21,6 +21,24 @@
       width="50%"
       :append-to-body="true"
     >
+      <h4 class="pl-24 pb-10">按钮权限</h4>
+      <div class="pl-24">
+        <el-checkbox
+          v-model="checkAll"
+          :indeterminate="isIndeterminate"
+          @change="handleCheckAllChange"
+          >全选</el-checkbox
+        >
+        <el-checkbox-group v-model="checkedBtns" @change="checkedBtnsChange">
+          <el-checkbox
+            v-for="item in btnTypes"
+            :key="item.key"
+            :label="item.value"
+            >{{ item.key }}</el-checkbox
+          >
+        </el-checkbox-group>
+      </div>
+      <h4 class="pl-24 pb-10 pt-10">菜单权限</h4>
       <el-tree
         :key="treeKey"
         ref="treeRef"
@@ -42,7 +60,7 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { deleteNodeFromTreeList, getCheckedKeysByProp } from '@/utils/common'
-  import { ElMessage, type ElTree } from 'element-plus'
+  import { ElMessage, type ElTree, type CheckboxValueType } from 'element-plus'
   import { cloneDeep } from 'lodash-es'
   import { roleApi, RoleType } from '@/api/index'
 
@@ -58,6 +76,18 @@
     children: 'children',
     disabled: 'disabled'
   }
+  const btnTypes = [
+    { value: 'ADD', key: '新增' },
+    { value: 'UPDATE', key: '修改' },
+    { value: 'DELETE', key: '删除' },
+    { value: 'VIEW', key: '查看' },
+    { value: 'DOWNLOAD', key: '下载' },
+    { value: 'IMPORT', key: '导入' },
+    { value: 'EXPORT', key: '导出' }
+  ]
+  const checkedBtns = ref<string[]>([])
+  const checkAll = ref(false)
+  const isIndeterminate = ref(true)
   let currentRole: RoleType.Res_getRole = {}
 
   let d = cloneDeep(
@@ -70,7 +100,6 @@
     try {
       const { data } = await roleApi.getRole()
       tableData.value = data
-      console.log(tableData.value, 'data')
     } finally {
       loading.value = false
     }
@@ -79,24 +108,42 @@
 
   const editRole = async (row: RoleType.Res_getRole) => {
     currentRole = row
-    const { data } = await roleApi.getRoleMenuById(row.role)
+    const { data } = await roleApi.getRoleAuthById(row.role)
+    // 默认选中按钮
+    checkedBtns.value = data.btn
+    if (data.btn.length === btnTypes.length) {
+      checkAll.value = true
+      isIndeterminate.value = false
+    }
+    // 默认选中菜单
     defaultCheckedKeys.value = getCheckedKeysByProp(
       routerOptionsClone,
       'name',
       (item) =>
-        (!item.children || !item.children.length) && !data.length
+        (!item.children || !item.children.length) && !data.menu.length
           ? true
-          : data.includes(item.name)
+          : data.menu.includes(item.name)
     )
     dialogVisible.value = true
     treeKey.value = new Date() + ''
   }
+
+  const handleCheckAllChange = (val: CheckboxValueType) => {
+    checkedBtns.value = val ? btnTypes.map((item) => item.value) : []
+    isIndeterminate.value = false
+  }
+  const checkedBtnsChange = (value: CheckboxValueType[]) => {
+    const checkedCount = value.length
+    checkAll.value = checkedCount === btnTypes.length
+    isIndeterminate.value = checkedCount > 0 && checkedCount < btnTypes.length
+  }
+
   const confirm = async () => {
     let keys = treeRef.value!.getCheckedKeys(true) as string[]
-    const { code, message } = await roleApi.putRoleMenuById(
-      currentRole.role,
-      keys
-    )
+    const { code, message } = await roleApi.putRoleAuthById(currentRole.role, {
+      menu: keys,
+      btn: checkedBtns.value
+    })
     if (code === 0) {
       ElMessage.success(message)
       dialogVisible.value = false

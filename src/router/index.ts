@@ -89,7 +89,9 @@ router.beforeEach(async (to) => {
       })
 
       // 获取用户信息
-      const userInfo = await commonStore.getUserInfoAndAuth()
+      await commonStore.getUserInfoAndAuth()
+      const userInfo = commonStore.userInfo
+
       if (userInfo && userInfo.menuAuth) {
         if (userInfo.menuAuth.length) {
           // 根据userInfo.menuAuth，匹配出权限路由（包含详情）
@@ -98,6 +100,7 @@ router.beforeEach(async (to) => {
             'name',
             userInfo.menuAuth
           )
+          console.log(resMap)
           // 添加权限路由
           resMap.forEach((r) => {
             if (!router.hasRoute(r.name!)) router.addRoute('layout', r)

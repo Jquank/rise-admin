@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import SvgIcon from './components/SvgIcon.vue'
 import VueGridLayout from 'vue-grid-layout'
 import i18n from './locales'
+import { permission } from '@/directive/permission'
 
 // element-plus 主题色css变量
 import 'element-plus/theme-chalk/dark/css-vars.css'
@@ -23,5 +24,6 @@ import './assets/css/index.less'
 const pinia = createPinia()
 const app = createApp(App)
 app.component('SvgIcon', SvgIcon)
+app.directive('permission', permission)
 app.use(router).use(pinia).use(VueGridLayout).use(i18n)
 app.mount('#app')

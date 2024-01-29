@@ -12,6 +12,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'menu-auth',
         meta: { title: '菜单权限', deep: 2 },
         component: () => import('@/examples/authManage/MenuAuth.vue')
+      },
+      {
+        path: 'button-auth',
+        name: 'button-auth',
+        meta: { title: '按钮权限', deep: 2 },
+        component: () => import('@/examples/authManage/ButtonAuth.vue')
       }
     ]
   }

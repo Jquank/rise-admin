@@ -25,16 +25,18 @@ export const useCommonStore = defineStore('common', () => {
       const { data } = await userApi.getUser()
       userInfo.value = data
       let menuAuth: string[] = []
+      let btnAuth: string[] = []
       if (userInfo.value.roles.length) {
-        const { data } = await userApi.getUserMenu(userInfo.value.roles)
-        menuAuth = data
+        const { data } = await userApi.getUserAuth(userInfo.value.roles)
+        menuAuth = data.menu
+        btnAuth = data.btn
       }
       userInfo.value.menuAuth = menuAuth
+      userInfo.value.btnAuth = btnAuth
     } catch (error) {
       console.error(error)
       userInfo.value = {}
     }
-    return userInfo.value
   }
   return {
     isCollapse,

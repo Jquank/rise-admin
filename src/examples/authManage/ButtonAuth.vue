@@ -14,6 +14,10 @@
       <el-radio label="admin" border></el-radio>
       <el-radio label="user" border></el-radio>
     </el-radio-group>
+    <div class="mt-20">
+      <el-button v-permission:add>新增按钮</el-button>
+      <el-button v-permission:view>查看按钮</el-button>
+    </div>
   </div>
 </template>
 
@@ -23,6 +27,7 @@
   import { useRouter } from 'vue-router'
   const router = useRouter()
   const commonStore = useCommonStore()
+
   const auth = ref(commonStore.userInfo.username)
   const radioChange = async (value: string | number | boolean) => {
     sessionStorage.setItem('token', value as string)

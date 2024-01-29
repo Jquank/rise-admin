@@ -28,15 +28,24 @@ class User {
     })
   }
 
-  getUserMenu(_: string[]): Promise<ResponseType<typeof res>> {
+  getUserAuth(
+    _: string[]
+  ): Promise<ResponseType<{ menu: string[]; btn: string[] }>> {
     const token = sessionStorage.getItem('token')
-    const storeageRes = JSON.parse(
+    const menuStoreage = JSON.parse(
       localStorage.getItem(`role-${token}-menu`) || 'null'
     )
-    const res = token === 'admin' ? [] : ['home', 'menu-auth']
+    const btnStoreage = JSON.parse(
+      localStorage.getItem(`role-${token}-btn`) || 'null'
+    )
+    const defaultMenu = token === 'admin' ? [] : ['home', 'auth-manage']
+    const defaultBtn = token === 'admin' ? ['VIEW', 'ADD'] : ['VIEW']
     return Promise.resolve({
       code: 0,
-      data: storeageRes || res,
+      data: {
+        menu: menuStoreage || defaultMenu,
+        btn: btnStoreage || defaultBtn
+      },
       message: '成功'
     })
   }

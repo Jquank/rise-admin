@@ -9,26 +9,29 @@ class Role {
   getRole(): Promise<ResponseType<Res_getRole[]>> {
     return $http.get('/mock/role')
   }
-  getRoleMenuById(id: string): Promise<ResponseType<string[]>> {
+  getRoleAuthById(
+    id: string
+  ): Promise<ResponseType<{ menu: string[]; btn: string[] }>> {
     const roleMenu = JSON.parse(
       localStorage.getItem(`role-${id}-menu`) || 'null'
     )
-    if (!roleMenu) {
-      return Promise.resolve({
-        code: 0,
-        data: id === 'admin' ? [] : ['home', 'menu-auth'],
-        message: 'success'
-      })
-    }
+    const roleBtn = JSON.parse(localStorage.getItem(`role-${id}-btn`) || 'null')
     return Promise.resolve({
       code: 0,
-      data: roleMenu,
+      data: {
+        menu: roleMenu || (id === 'admin' ? [] : ['home', 'auth-manage']),
+        btn: roleBtn || (id === 'admin' ? ['VIEW', 'ADD'] : ['VIEW'])
+      },
       message: 'success'
     })
   }
 
-  putRoleMenuById(id: string, data: string[]): Promise<ResponseType<any>> {
-    localStorage.setItem(`role-${id}-menu`, JSON.stringify(data))
+  putRoleAuthById(
+    id: string,
+    data: { menu: string[]; btn: string[] }
+  ): Promise<ResponseType<any>> {
+    localStorage.setItem(`role-${id}-menu`, JSON.stringify(data.menu))
+    localStorage.setItem(`role-${id}-btn`, JSON.stringify(data.btn))
     return Promise.resolve({
       code: 0,
       data: null,
