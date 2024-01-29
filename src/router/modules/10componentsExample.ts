@@ -14,6 +14,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/examples/editor/editorTinymce.vue')
       },
       {
+        path: 'download',
+        name: 'download',
+        meta: { title: '文件下载', deep: 2 },
+        component: () => import('@/examples/download/DownloadEx.vue')
+      },
+      {
         path: 'icons',
         name: 'icons',
         meta: { title: '字体图标', deep: 2 },

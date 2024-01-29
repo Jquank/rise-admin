@@ -46,6 +46,7 @@ declare module 'vue' {
     ElTree: typeof import('element-plus/es')['ElTree']
     ElWatermark: typeof import('element-plus/es')['ElWatermark']
     EmptyRouterView: typeof import('./src/components/EmptyRouterView.vue')['default']
+    FileDownload: typeof import('./src/components/download/FileDownload.vue')['default']
     GridCollapse: typeof import('./src/components/GridCollapse.vue')['default']
     ListPagination: typeof import('./src/components/ListPagination.vue')['default']
     NumberChart: typeof import('./src/components/charts/NumberChart.vue')['default']
