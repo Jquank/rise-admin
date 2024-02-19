@@ -1,7 +1,8 @@
 html._rise_ {
   // el-alert
-  .el-alert--info {
-    --el-alert-bg-color: var(--el-color-info-light-5);
+
+  .el-alert {
+    --el-alert-description-font-size: 14px;
   }
   // el-menu
   #app .el-menu,
@@ -19,6 +20,9 @@ html._rise_ {
 }
 
 html.default {
+  .el-alert--info {
+    --el-alert-bg-color: lighten(@main-bg-color-default, 4%);
+  }
   --el-dropdown-menu-box-shadow: none;
   --el-bg-color: @main-bg-color-default;
   --el-bg-color-page: lighten(@main-bg-color-default, 5%);

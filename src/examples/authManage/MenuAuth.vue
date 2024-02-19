@@ -1,16 +1,10 @@
 <template>
-  <div class="menu-auth">
-    <h3>点击下方按钮切换账户</h3>
-    <el-radio-group
-      style="
-        width: 100%;
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-      "
-      v-model="auth"
-      @change="radioChange"
-    >
+  <div class="padding-18" style="background: var(--main-bg-color)">
+    <el-alert :closable="false">
+      取角色所对应菜单的并集，通过addRoute添加动态路由
+    </el-alert>
+    <h3 class="mt-20">点击下方按钮切换账户</h3>
+    <el-radio-group v-model="auth" @change="radioChange" class="mt-20">
       <el-radio label="admin" border></el-radio>
       <el-radio label="user" border></el-radio>
     </el-radio-group>
@@ -29,14 +23,3 @@
     router.go(0)
   }
 </script>
-
-<style lang="less" scoped>
-  .menu-auth {
-    background: var(--main-bg-color);
-    height: 500px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-</style>

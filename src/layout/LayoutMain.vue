@@ -1,10 +1,10 @@
 <template>
   <div class="layout">
     <LayoutHeader></LayoutHeader>
-    <div class="layout-main">
-      <div class="layout-left">
+    <main class="layout-main">
+      <nav class="layout-left">
         <LayoutNav></LayoutNav>
-      </div>
+      </nav>
       <el-watermark
         content="watermark"
         :font="font"
@@ -36,7 +36,7 @@
           </div>
         </section>
       </el-watermark>
-    </div>
+    </main>
   </div>
 </template>
 
