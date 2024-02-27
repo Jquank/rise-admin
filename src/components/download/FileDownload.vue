@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
   import $http from '@/utils/http'
+  import { ResponseType } from 'axios'
   const props = defineProps({
     url: {
       type: String,
@@ -20,7 +21,7 @@
         headers: {
           Authorization: null
         },
-        responseType: type
+        responseType: type as ResponseType
       })
       .then((res) => {
         return res
@@ -34,7 +35,7 @@
     let url = ''
     if (reg.test(props.url)) {
       const res = await toHttpBlob(props.url)
-      url = window.URL.createObjectURL(res)
+      url = window.URL.createObjectURL(res as unknown as Blob)
     }
     const aTag = document.createElement('a')
     aTag.href = url || props.url

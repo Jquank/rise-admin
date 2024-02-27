@@ -1,6 +1,6 @@
 import { useCommonStore } from '@/store/common'
 export const permission = {
-  mounted(el: HTMLElement, binding: { arg: string | undefined }) {
+  mounted(el: HTMLElement, binding: { arg?: string }) {
     const commonStore = useCommonStore()
     const btnAuth = commonStore.userInfo.btnAuth || []
     const arg = (binding.arg || '').toUpperCase()
