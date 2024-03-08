@@ -79,7 +79,7 @@
       searchModel
     )
     return listApi
-      .getList(params)
+      .getList(params, { baseURL: import.meta.env.VITE_HTTP_URL2 || '' })
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data

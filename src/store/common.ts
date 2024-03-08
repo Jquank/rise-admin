@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { userApi } from '@/api/index'
+import { userApi, UserType } from '@/_api/index'
+
+interface UserInfoType extends UserType.Res_getUser {
+  mergedMenuAuth: string[]
+  mergedBtnAuth: string[]
+}
 
 export const useCommonStore = defineStore('common', () => {
   // 折叠菜单标识
@@ -17,22 +22,24 @@ export const useCommonStore = defineStore('common', () => {
 
   // 用户信息
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userInfo = ref<Record<string, any>>({})
+  const userInfo = ref<Partial<UserInfoType>>({})
 
   // 获取用户信息和菜单权限
   async function getUserInfoAndAuth() {
     try {
       const { data } = await userApi.getUser()
-      userInfo.value = data
-      let menuAuth: string[] = []
-      let btnAuth: string[] = []
-      if (userInfo.value.roles.length) {
-        const { data } = await userApi.getUserAuth(userInfo.value.roles)
-        menuAuth = data.menu
-        btnAuth = data.btn
+      // 合并多角色权限
+      const menuAuth = data.roles
+        .map((item) => item.menuAuth)
+        .reduce((pre, cur) => pre.concat(cur), [])
+      const btnAuth = data.roles
+        .map((item) => item.btnAuth)
+        .reduce((pre, cur) => pre.concat(cur), [])
+      const mergedAuth = {
+        mergedMenuAuth: [...new Set(menuAuth)],
+        mergedBtnAuth: [...new Set(btnAuth)]
       }
-      userInfo.value.menuAuth = menuAuth
-      userInfo.value.btnAuth = btnAuth
+      userInfo.value = { ...data, ...mergedAuth }
     } catch (error) {
       console.error(error)
       userInfo.value = {}

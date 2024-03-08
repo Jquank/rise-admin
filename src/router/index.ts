@@ -6,7 +6,6 @@ import {
   deleteNodeFromTreeList
 } from '@/utils/common'
 import { useCommonStore } from '@/store/common'
-import { cloneDeep } from 'lodash-es'
 
 const routerImport: Array<RouteRecordRaw> = []
 const routerModules = import.meta.glob('./modules/*.ts')
@@ -85,41 +84,32 @@ router.beforeEach(async (to) => {
       // 清空menuData和所有router
       commonStore.menuData = []
       layoutRoutes.children?.forEach((r) => {
-        if (router.hasRoute(r.name!)) router.removeRoute(r.name!)
+        if (r.name !== 'home' && router.hasRoute(r.name!))
+          router.removeRoute(r.name!)
       })
 
       // 获取用户信息
       await commonStore.getUserInfoAndAuth()
       const userInfo = commonStore.userInfo
 
-      if (userInfo && userInfo.menuAuth) {
-        if (userInfo.menuAuth.length) {
-          // 根据userInfo.menuAuth，匹配出权限路由（包含详情）
-          const resMap = findPathTreeByValue(
-            layoutRoutes.children!,
-            'name',
-            userInfo.menuAuth
-          )
-          console.log(resMap)
-          // 添加权限路由
-          resMap.forEach((r) => {
-            if (!router.hasRoute(r.name!)) router.addRoute('layout', r)
-          })
-          // 添加完后，删除详情节点
-          deleteNodeFromTreeList(resMap, false, 'meta.show')
-          commonStore.menuData = resMap
-        } else {
-          // 模拟初始化admin账户权限，实际删除此else条件及所有代码
-          const data = cloneDeep(layoutRoutes.children!)
-          data.forEach((r) => {
-            if (!router.hasRoute(r.name!)) {
-              router.addRoute('layout', r)
-            }
-          })
-          deleteNodeFromTreeList(data, false, 'meta.show')
-          commonStore.menuData = data
-        }
+      // 没权限，默认给首页权限
+      if (!userInfo.mergedMenuAuth || !userInfo.mergedMenuAuth!.length) {
+        userInfo.mergedMenuAuth = ['home']
       }
+      // 匹配出权限路由（包含详情）
+      const resMap = findPathTreeByValue(
+        layoutRoutes.children!,
+        'name',
+        userInfo.mergedMenuAuth
+      )
+      // 添加权限路由
+      resMap.forEach((r) => {
+        if (!router.hasRoute(r.name!)) router.addRoute('layout', r)
+      })
+      // 添加完后，删除详情节点
+      deleteNodeFromTreeList(resMap, false, 'meta.show')
+      commonStore.menuData = resMap
+
       // 添加404
       router.addRoute('layout', {
         path: '/:pathMatch(.*)*',

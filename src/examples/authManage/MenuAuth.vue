@@ -19,7 +19,7 @@
   const commonStore = useCommonStore()
   const auth = ref(commonStore.userInfo.username)
   const radioChange = async (value: string | number | boolean) => {
-    sessionStorage.setItem('token', value as string)
+    sessionStorage.setItem('token', value === 'admin' ? '1' : '2')
     router.go(0)
   }
 </script>

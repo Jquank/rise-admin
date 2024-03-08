@@ -41,6 +41,10 @@ export default defineConfig({
       '/mock': {
         target: 'https://mock.mengxuegu.com/mock/623ec0649a111d2ee2cb4b5f',
         changeOrigin: true
+      },
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
       }
       // '/mock': {
       //   target: 'http://localhost:3000/api',
