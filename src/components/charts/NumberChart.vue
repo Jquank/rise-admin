@@ -1,33 +1,40 @@
 <template>
   <div class="chart-inner">
-    <ChartTitle :title="data.title" :value="data.value" />
+    <ChartTitle :title="props.data.title" :value="props.data.value" />
     <div class="number-footer">
       <span>
         <SvgIcon icon="shangjiantou" color="rgb(82, 196, 26)" />
-        {{ data.up }}</span
+        {{ 11 }}</span
       >
       <span class="last-span">
         <SvgIcon icon="xiajiantou" color="rgb(250, 84, 28)" />
-        {{ data.down }}</span
+        {{ 22 }}</span
       >
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive } from 'vue'
+  import { onMounted } from 'vue'
   import ChartTitle from './ChartTitle.vue'
   const props = defineProps({
-    i: String
+    data: {
+      type: Object,
+      default: () => ({})
+    }
   })
-  const data = reactive({
-    title: ['商品销售总量', '近七日销售额', '搜索次数', '优惠券发放量'][
-      +props.i!
-    ],
-    value: Math.floor(Math.random() * 10000) + '.00',
-    up: Math.floor(Math.random() * 100) + '%',
-    down: Math.floor(Math.random() * 100) + '%'
+  onMounted(() => {
+    console.log(props.data, 'ppppp')
   })
+
+  // const data = reactive({
+  //   title: ['商品销售总量', '近七日销售额', '搜索次数', '优惠券发放量'][
+  //     +props.i!
+  //   ],
+  //   value: Math.floor(Math.random() * 10000) + '.00',
+  //   up: Math.floor(Math.random() * 100) + '%',
+  //   down: Math.floor(Math.random() * 100) + '%'
+  // })
 </script>
 
 <style lang="less" scoped>

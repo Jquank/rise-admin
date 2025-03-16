@@ -7,6 +7,7 @@ import VueGridLayout from 'vue-grid-layout'
 import i18n from './locales'
 import { permission } from '@/directive/permission'
 
+import 'element-plus/dist/index.css'
 // element-plus 主题色css变量
 import 'element-plus/theme-chalk/dark/css-vars.css'
 

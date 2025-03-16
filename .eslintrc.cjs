@@ -41,6 +41,7 @@ module.exports = {
         ignores: ['index']
       }
     ],
+    'vue/html-closing-bracket-newline': 'off',
     'prettier/prettier': [
       'error',
       {

@@ -88,6 +88,8 @@ export const numberData = {
     {
       // 图表类型，0，1，2，3，4...
       type: 1,
+      // 图表大小
+      size: 'SMALL',
       // 单位
       unit: '',
       // 对比维度或堆叠维度
@@ -98,4 +100,32 @@ export const numberData = {
       yAxis: []
     }
   ]
+}
+
+export const numberDataMock = {
+  id: '', // 卡片id。默认为空
+  posi: '{}', // 卡片的位置信息，由前端给
+  title: '商品销售数量',
+  value: '1200.00',
+  // 图表类型，0，1，2，3，4...
+  graphType: 1,
+  // 图表大小
+  graphSize: 'SMALL',
+  // 单位
+  unit: '',
+  // 图表数据
+  data: {
+    // 对比维度或堆叠维度
+    legendData: [],
+    // x轴数据
+    xAxisData: [],
+    // y轴数据
+    yAxis: [],
+    // 环比上涨
+    up: '15%',
+    // 环比下降
+    down: '10%'
+  },
+  // 配置数据
+  config: {}
 }

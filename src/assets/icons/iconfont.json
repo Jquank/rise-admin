@@ -6,6 +6,69 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "220122",
+      "name": "levels",
+      "font_class": "levels",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "1766280",
+      "name": "yibiaopan1",
+      "font_class": "yibiaopan1",
+      "unicode": "e67a",
+      "unicode_decimal": 59002
+    },
+    {
+      "icon_id": "2813176",
+      "name": "number-chart",
+      "font_class": "number-chart",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "6151030",
+      "name": "pie-chart",
+      "font_class": "pie-chart",
+      "unicode": "e78c",
+      "unicode_decimal": 59276
+    },
+    {
+      "icon_id": "6151032",
+      "name": "scatter-chart",
+      "font_class": "scatter-chart",
+      "unicode": "e78e",
+      "unicode_decimal": 59278
+    },
+    {
+      "icon_id": "6151034",
+      "name": "line-chart",
+      "font_class": "line-chart",
+      "unicode": "e790",
+      "unicode_decimal": 59280
+    },
+    {
+      "icon_id": "6151035",
+      "name": "bar-chart",
+      "font_class": "bar-chart",
+      "unicode": "e791",
+      "unicode_decimal": 59281
+    },
+    {
+      "icon_id": "22761406",
+      "name": "yibiaopan2",
+      "font_class": "yibiaopan2",
+      "unicode": "e6be",
+      "unicode_decimal": 59070
+    },
+    {
+      "icon_id": "27963837",
+      "name": "circle-chart",
+      "font_class": "circle-chart",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
       "icon_id": "15838561",
       "name": "arrow-left",
       "font_class": "arrow-left",

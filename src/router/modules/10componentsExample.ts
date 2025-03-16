@@ -30,6 +30,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'grid-collapse',
         meta: { title: '栅格折叠', deep: 2 },
         component: () => import('@/examples/gridCollapse/index.vue')
+      },
+      {
+        path: 'form',
+        name: 'form',
+        meta: { title: '表单', deep: 2 },
+        component: () => import('@/examples/form/index.vue')
       }
     ]
   }

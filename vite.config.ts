@@ -1,3 +1,11 @@
+/*
+ * @Author: gongjian 478197650@qq.com
+ * @Date: 2023-12-17 22:23:09
+ * @LastEditors: gongjian 478197650@qq.com
+ * @LastEditTime: 2025-03-09 21:49:28
+ * @FilePath: \rise\web\vite.config.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
@@ -43,7 +51,8 @@ export default defineConfig({
         changeOrigin: true
       },
       '/api': {
-        target: 'http://localhost:3000',
+        // target: 'http://localhost:3000',
+        target: 'http://112.124.23.47:3000',
         changeOrigin: true
       }
       // '/mock': {

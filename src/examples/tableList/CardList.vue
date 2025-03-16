@@ -58,7 +58,6 @@
   import { useRouter } from 'vue-router'
   import GridCollapse from '@/components/GridCollapse.vue'
   import { listApi, ListType } from '@/api/index'
-
   const router = useRouter()
   const tableData = ref<ListType.Res_getList[]>([])
   const searchModel = reactive({

@@ -32,7 +32,7 @@
   }
   const urls = [
     iconfontURL,
-    'https://at.alicdn.com/t/c/font_4380660_r3zwauwij5l.js'
+    'https://at.alicdn.com/t/c/font_4380660_b9lbte90tyr.js'
   ]
   const request = async (urls: string[]) => {
     for (let i = 0; i < urls.length; i++) {

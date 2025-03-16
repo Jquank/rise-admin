@@ -1,18 +1,18 @@
 <template>
   <div class="layout">
     <LayoutHeader></LayoutHeader>
-    <main class="layout-main">
+    <el-watermark
+      content="watermark"
+      :font="font"
+      :z-index="5000"
+      :offset="[50, 50]"
+      class="layout-main"
+    >
       <nav class="layout-left">
         <LayoutNav></LayoutNav>
       </nav>
-      <el-watermark
-        content="watermark"
-        :font="font"
-        :z-index="5000"
-        :offset="[50, 50]"
-        class="layout-right"
-      >
-        <section class="main-box">
+      <div class="layout-right">
+        <main class="main-box">
           <el-scrollbar
             ref="scrollBarRef"
             v-if="$route.meta.noUseGlobalScrollbar !== true"
@@ -34,9 +34,9 @@
               </transition>
             </router-view>
           </div>
-        </section>
-      </el-watermark>
-    </main>
+        </main>
+      </div>
+    </el-watermark>
   </div>
 </template>
 
