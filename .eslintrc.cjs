@@ -41,7 +41,6 @@ module.exports = {
         ignores: ['index']
       }
     ],
-    'vue/html-closing-bracket-newline': 'off',
     'prettier/prettier': [
       'error',
       {
@@ -51,7 +50,8 @@ module.exports = {
         tabWidth: 2,
         trailingComma: 'none',
         vueIndentScriptAndStyle: true,
-        endOfLIne: 'Lf'
+        endOfLIne: 'Lf',
+        bracketSameLine: true
       },
       { usePrettierrc: false }
     ]

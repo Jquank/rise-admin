@@ -6,5 +6,6 @@ export interface ConfigItemType {
   prop: string
   type?: CompType
   customType?: Component
-  compConfig?: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  compConfig?: Record<string, any>
 }

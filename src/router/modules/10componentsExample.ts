@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'form',
         name: 'form',
-        meta: { title: '表单', deep: 2 },
+        meta: { title: '配置化表单', deep: 2 },
         component: () => import('@/examples/form/index.vue')
       }
     ]
