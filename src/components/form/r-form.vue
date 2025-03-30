@@ -1,29 +1,49 @@
 <template>
-  <el-form :model="props.model" v-bind="$attrs" label-width="auto">
+  <el-form
+    ref="formRef"
+    :model="formData"
+    v-bind="{
+      labelWidth: 'auto',
+      labelSuffix: ' :',
+      validateOnRuleChange: false,
+      ...$attrs,
+      ...{ rules }
+    }">
     <template v-for="(item, index) in props.config" :key="item.prop">
-      <el-form-item v-bind="{ ...$attrs, ...item }">
+      <el-form-item
+        v-bind="{ prop: item.prop, label: item.label, ...item?.itemConfig }">
+        <!-- readonly 渲染文本 -->
+        <span v-if="props.readonly" class="form-item-text">
+          {{ getLabel(formData[item.prop]) }}
+        </span>
+        <!-- 渲染表单组件 -->
         <component
-          :is="item.type ? compMap[item.type] : item.customType"
+          v-else
+          :is="getFormComp(item)"
           v-bind="{
+            clearable: true,
+            optionData: options[index],
             ...item.compConfig,
             ...transformEventName(item?.compConfig?.events)
           }"
           v-model="formData[item.prop]"
           @focus="compFocus(item, index)"
           style="width: 100%">
+          <!-- 处理插槽，支持text,html,组件 -->
           <template
-            v-if="
-              item.type &&
-              (item?.compConfig?.code || item?.compConfig?.customOptions)
-            ">
+            v-for="slot in item.compConfig?.slots || []"
+            :key="slot.name"
+            #[slot.name]>
+            <div
+              v-if="slot.content?.type === 'text'"
+              v-text="slot.content.value"></div>
+            <div
+              v-else-if="slot.content?.type === 'html'"
+              v-html="slot.content.value"></div>
             <component
-              :is="childCompMap[item.type] || null"
-              v-for="v in options[index]"
-              :key="v.id || v.value || v.label"
-              :label="item.type === 'radio' ? v.value : v.label"
-              :value="v.value"
-              >{{ v.label }}</component
-            >
+              v-else
+              :is="slot.content?.type"
+              v-bind="slot.content.value || {}"></component>
           </template>
         </component>
       </el-form-item>
@@ -33,10 +53,10 @@
 
 <script setup lang="ts">
   import { ref, watchEffect } from 'vue'
-  import { compMap, childCompMap } from './config'
+  import { compMap } from './config'
   import { type ConfigItemType } from './type'
-  import { isEmpty } from 'lodash-es'
-  // todo 表单校验，表单提交传参，表单只读模式
+  import * as _ from 'lodash-es'
+  // todo 表单提交传参
   const props = defineProps({
     config: {
       type: Array<ConfigItemType>,
@@ -45,8 +65,51 @@
     model: {
       type: Object,
       default: () => ({})
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   })
+
+  const formRef = ref(null)
+
+  const getLabel = (value: unknown) => {
+    if (_.isNil(value)) {
+      return '' // 空值返回空字符串
+    }
+
+    if (_.isString(value) || _.isNumber(value)) {
+      return String(value) // 字符串或数字直接返回
+    }
+
+    if (_.isArray(value)) {
+      // 处理数组（可能是 string[]、number[]、object[]）
+      return _.chain(value)
+        .map((item) => {
+          if (_.isPlainObject(item) && Reflect.has(item, 'label')) {
+            return item.label // 提取对象中的 label
+          }
+          return String(item) // 其他类型转为字符串
+        })
+        .compact() // 移除空值（null/undefined）
+        .join(', ') // 组合为逗号分隔的文本
+        .value()
+    }
+    if (
+      _.isPlainObject(value) &&
+      typeof value === 'object' &&
+      'label' in value
+    ) {
+      return String(value?.label) // 纯对象提取 label
+    }
+    return '' // 其他情况返回空字符串
+  }
+
+  const getFormComp = (item: ConfigItemType) => {
+    if (props.readonly) return 'span'
+    return item.type ? compMap[item.type] : item.customType
+  }
 
   // 事件键值前加上on
   const transformEventName = (
@@ -101,7 +164,7 @@
       if (
         !item?.compConfig?.code &&
         item?.compConfig?.customOptions &&
-        isEmpty(options.value[index])
+        _.isEmpty(options.value[index])
       ) {
         await getOptions(item, index)
       }
@@ -114,6 +177,41 @@
       await getOptions(item, index)
     }
   }
+
+  // rules校验
+  const rules = ref<Record<string, unknown[]>>({})
+  watchEffect(() => {
+    if (props.readonly) return
+    rules.value = props.config
+      .filter((item) => item.required || item.rule)
+      .reduce((prev: Record<string, unknown[]>, item) => {
+        if (item.rule) {
+          prev[item.prop] = item.rule
+          return prev
+        }
+        prev[item.prop] = [
+          {
+            required: true,
+            message: `${item.label || ''}为必填项`,
+            trigger: 'blur'
+          },
+          {
+            required: true,
+            message: `${item.label || ''}为必填项`,
+            trigger: 'change'
+          }
+        ]
+        return prev
+      }, {})
+  })
+
+  defineExpose({
+    formRef
+  })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .form-item-text {
+    word-break: break-all;
+  }
+</style>

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ChartTitle: typeof import('./src/components/charts/ChartTitle.vue')['default']
+    copy: typeof import('./src/components/form/components/r-radio copy.vue')['default']
     DragTree: typeof import('./src/components/dragChart/DragTree.vue')['default']
     DragWrapper: typeof import('./src/components/dragChart/DragWrapper.vue')['default']
     DropArea: typeof import('./src/components/dragChart/DropArea.vue')['default']
@@ -63,6 +64,8 @@ declare module 'vue' {
     RForm: typeof import('./src/components/form/r-form.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    RRadio: typeof import('./src/components/form/components/r-radio.vue')['default']
+    RSelect: typeof import('./src/components/form/components/r-select.vue')['default']
     SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']
     Table: typeof import('./src/components/table/index.vue')['default']
   }

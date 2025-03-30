@@ -1,21 +1,11 @@
-import {
-  ElInput,
-  ElSelect,
-  ElCheckbox,
-  ElRadioGroup,
-  ElRadio,
-  ElOption
-} from 'element-plus'
+import { ElInput, ElCheckbox } from 'element-plus'
+import Radio from './components/r-radio.vue'
+import Select from './components/r-select.vue'
 import Editor from '@/components/EditorTinymce.vue'
 export const compMap = {
   input: ElInput,
-  select: ElSelect,
+  select: Select,
   checkbox: ElCheckbox,
-  radio: ElRadioGroup,
+  radio: Radio,
   editor: Editor
-}
-
-export const childCompMap: Record<string, unknown> = {
-  radio: ElRadio,
-  select: ElOption
 }
