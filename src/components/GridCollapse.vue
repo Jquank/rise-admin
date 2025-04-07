@@ -22,8 +22,7 @@
               defaultCollapse && index > 24 / breakPoint.lg - 2,
             'hidden-xl-only xl':
               defaultCollapse && index > 24 / breakPoint.xl - 2
-          }"
-        >
+          }">
           <component :is="vnode"></component>
         </el-col>
         <el-col
@@ -33,8 +32,7 @@
           :lg="breakPoint.lg"
           :xl="breakPoint.xl"
           ref="lastColRef"
-          class="expand-or-collapse"
-        >
+          class="expand-or-collapse">
           <el-button @click="reset" v-if="showActionBtn">重置</el-button>
           <el-button
             @click="search"
@@ -49,8 +47,7 @@
           }}</span>
           <SvgIcon
             @click="toggleCollapse"
-            :icon="defaultCollapse ? 'arrow-down' : 'arrow-up'"
-          ></SvgIcon>
+            :icon="defaultCollapse ? 'arrow-down' : 'arrow-up'"></SvgIcon>
         </el-col>
       </el-row>
     </component>

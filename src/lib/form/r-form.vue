@@ -14,7 +14,7 @@
         v-bind="{ prop: item.prop, label: item.label, ...item?.itemConfig }">
         <!-- readonly 渲染文本 -->
         <span v-if="props.readonly" class="form-item-text">
-          {{ getLabel(formData[item.prop]) }}
+          {{ getLabel(formData[item.prop], item.compConfig?.textField) }}
         </span>
         <!-- 渲染表单组件 -->
         <component
@@ -33,7 +33,7 @@
           <template
             v-for="slot in item.compConfig?.slots || []"
             :key="slot.name"
-            #[slot.name]>
+            v-slot:[slot.name]>
             <div
               v-if="slot.content?.type === 'text'"
               v-text="slot.content.value"></div>
@@ -52,17 +52,19 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watchEffect } from 'vue'
+  import { ref, watchEffect, PropType } from 'vue'
   import { compMap } from './config'
-  import { type ConfigItemType } from './type'
+  import { defaultTextField } from './const'
+  import { type ConfigItemType } from './types'
   import * as _ from 'lodash-es'
-  // todo 表单提交传参
+  import { useVModel } from '@vueuse/core'
+  import { type FormRules } from 'element-plus'
   const props = defineProps({
     config: {
-      type: Array<ConfigItemType>,
+      type: Array as PropType<Array<ConfigItemType>>,
       default: () => []
     },
-    model: {
+    modelValue: {
       type: Object,
       default: () => ({})
     },
@@ -71,10 +73,11 @@
       default: false
     }
   })
+  const emits = defineEmits(['update:modelValue', 'focus'])
 
   const formRef = ref(null)
 
-  const getLabel = (value: unknown) => {
+  const getLabel = (value: unknown, textField = defaultTextField) => {
     if (_.isNil(value)) {
       return '' // 空值返回空字符串
     }
@@ -87,8 +90,8 @@
       // 处理数组（可能是 string[]、number[]、object[]）
       return _.chain(value)
         .map((item) => {
-          if (_.isPlainObject(item) && Reflect.has(item, 'label')) {
-            return item.label // 提取对象中的 label
+          if (_.isPlainObject(item) && Reflect.has(item, textField)) {
+            return item[textField] // 提取对象中的 label
           }
           return String(item) // 其他类型转为字符串
         })
@@ -96,12 +99,8 @@
         .join(', ') // 组合为逗号分隔的文本
         .value()
     }
-    if (
-      _.isPlainObject(value) &&
-      typeof value === 'object' &&
-      'label' in value
-    ) {
-      return String(value?.label) // 纯对象提取 label
+    if (_.isPlainObject(value)) {
+      return String((value as Record<string, unknown>)[textField] || '') // 纯对象提取 label
     }
     return '' // 其他情况返回空字符串
   }
@@ -123,11 +122,7 @@
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formData = ref<Record<string, any>>({})
-
-  watchEffect(() => {
-    formData.value = props.model
-  })
+  const formData = useVModel(props, 'modelValue', emits)
 
   // 模拟远程获取数据
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -173,18 +168,19 @@
 
   // code存在时，focus事件获取数据
   const compFocus = async (item: ConfigItemType, index: number) => {
+    emits('focus')
     if (item.type?.includes('select')) {
       await getOptions(item, index)
     }
   }
 
   // rules校验
-  const rules = ref<Record<string, unknown[]>>({})
+  const rules = ref<FormRules>({})
   watchEffect(() => {
     if (props.readonly) return
     rules.value = props.config
       .filter((item) => item.required || item.rule)
-      .reduce((prev: Record<string, unknown[]>, item) => {
+      .reduce((prev: Record<string, object>, item) => {
         if (item.rule) {
           prev[item.prop] = item.rule
           return prev
@@ -192,12 +188,12 @@
         prev[item.prop] = [
           {
             required: true,
-            message: `${item.label || ''}为必填项`,
+            message: `${item.label}为必填项`,
             trigger: 'blur'
           },
           {
             required: true,
-            message: `${item.label || ''}为必填项`,
+            message: `${item.label}为必填项`,
             trigger: 'change'
           }
         ]

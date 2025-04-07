@@ -22,6 +22,8 @@ import './assets/icons/iconfont.js'
 // css
 import './assets/css/index.less'
 
+import '@jquank/rise-ui/style.css'
+
 const pinia = createPinia()
 const app = createApp(App)
 app.component('SvgIcon', SvgIcon)

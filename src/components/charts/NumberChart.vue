@@ -15,16 +15,12 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted } from 'vue'
   import ChartTitle from './ChartTitle.vue'
   const props = defineProps({
     data: {
       type: Object,
       default: () => ({})
     }
-  })
-  onMounted(() => {
-    console.log(props.data, 'ppppp')
   })
 
   // const data = reactive({

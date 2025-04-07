@@ -7,8 +7,7 @@
     :layout="layout"
     :total="total"
     @size-change="sizeChange"
-    @current-change="currentChange"
-  />
+    @current-change="currentChange" />
 </template>
 
 <script setup lang="ts">

@@ -1,0 +1,30 @@
+{
+  "name": "@jquank/rise-ui",
+  "version": "1.0.3",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/riseui.umd.cjs",
+  "module": "./dist/riseui.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/riseui.js",
+      "require": "./dist/riseui.umd.cjs"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "scripts": {
+    "build": "npx vite build -c ./vite.lib.config.js",
+    "pub": "npm publish --access=public"
+  },
+  "keywords": [
+    "rise-ui"
+  ],
+  "author": "jquank",
+  "license": "ISC"
+}
