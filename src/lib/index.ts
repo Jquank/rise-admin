@@ -1,7 +1,9 @@
-import RForm from './form/index'
+import { RForm } from './components/form'
+export type { ConfigItemType } from './components/form/types'
 
-// 导出组件
-export { RForm }
+import { RPagination } from './components/pagination'
+export type { SearchMethod } from './components/pagination/types'
 
-// 导出类型
-export type * from './form/index'
+import { RTable, mergeColumnConfig } from './components/table'
+
+export { RForm, RPagination, RTable, mergeColumnConfig }

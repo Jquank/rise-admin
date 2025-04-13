@@ -9,45 +9,54 @@
       ...$attrs,
       ...{ rules }
     }">
-    <template v-for="(item, index) in props.config" :key="item.prop">
-      <el-form-item
-        v-bind="{ prop: item.prop, label: item.label, ...item?.itemConfig }">
-        <!-- readonly 渲染文本 -->
-        <span v-if="props.readonly" class="form-item-text">
-          {{ getLabel(formData[item.prop], item.compConfig?.textField) }}
-        </span>
-        <!-- 渲染表单组件 -->
-        <component
-          v-else
-          :is="getFormComp(item)"
+    <el-row>
+      <el-col
+        v-for="(item, index) in props.config"
+        :key="item.prop"
+        :span="getColSpan(item)">
+        <el-form-item
           v-bind="{
-            clearable: true,
-            optionData: options[index],
-            ...item.compConfig,
-            ...transformEventName(item?.compConfig?.events)
-          }"
-          v-model="formData[item.prop]"
-          @focus="compFocus(item, index)"
-          style="width: 100%">
-          <!-- 处理插槽，支持text,html,组件 -->
-          <template
-            v-for="slot in item.compConfig?.slots || []"
-            :key="slot.name"
-            v-slot:[slot.name]>
-            <div
-              v-if="slot.content?.type === 'text'"
-              v-text="slot.content.value"></div>
-            <div
-              v-else-if="slot.content?.type === 'html'"
-              v-html="slot.content.value"></div>
-            <component
-              v-else
-              :is="slot.content?.type"
-              v-bind="slot.content.value || {}"></component>
-          </template>
-        </component>
-      </el-form-item>
-    </template>
+            prop: item.prop,
+            label: item.label,
+            ...item?.itemConfig
+          }">
+          <!-- readonly 渲染文本 -->
+          <span v-if="props.readonly" class="form-item-text">
+            {{ getLabel(formData[item.prop], item.compConfig?.textField) }}
+          </span>
+          <!-- 渲染表单组件 -->
+          <component
+            v-else
+            :is="getFormComp(item)"
+            v-bind="{
+              clearable: true,
+              optionData: options[index],
+              ...item.compConfig,
+              ...transformEventName(item?.compConfig?.events)
+            }"
+            v-model="formData[item.prop]"
+            @focus="compFocus(item, index)"
+            style="width: 100%">
+            <!-- 处理插槽，支持text,html,组件 -->
+            <template
+              v-for="slot in item.compConfig?.slots || []"
+              :key="slot.name"
+              v-slot:[slot.name]>
+              <div
+                v-if="slot.content?.type === 'text'"
+                v-text="slot.content.value"></div>
+              <div
+                v-else-if="slot.content?.type === 'html'"
+                v-html="slot.content.value"></div>
+              <component
+                v-else
+                :is="slot.content?.type"
+                v-bind="slot.content.value || {}"></component>
+            </template>
+          </component>
+        </el-form-item>
+      </el-col>
+    </el-row>
   </el-form>
 </template>
 
@@ -56,9 +65,18 @@
   import { compMap } from './config'
   import { defaultTextField } from './const'
   import { type ConfigItemType } from './types'
-  import * as _ from 'lodash-es'
+  import {
+    isNil,
+    isString,
+    isNumber,
+    isArray,
+    chain,
+    isPlainObject,
+    isEmpty
+  } from 'lodash-es'
   import { useVModel } from '@vueuse/core'
   import { type FormRules } from 'element-plus'
+  // todo 栅格
   const props = defineProps({
     config: {
       type: Array as PropType<Array<ConfigItemType>>,
@@ -78,19 +96,19 @@
   const formRef = ref(null)
 
   const getLabel = (value: unknown, textField = defaultTextField) => {
-    if (_.isNil(value)) {
+    if (isNil(value)) {
       return '' // 空值返回空字符串
     }
 
-    if (_.isString(value) || _.isNumber(value)) {
+    if (isString(value) || isNumber(value)) {
       return String(value) // 字符串或数字直接返回
     }
 
-    if (_.isArray(value)) {
+    if (isArray(value)) {
       // 处理数组（可能是 string[]、number[]、object[]）
-      return _.chain(value)
+      return chain(value)
         .map((item) => {
-          if (_.isPlainObject(item) && Reflect.has(item, textField)) {
+          if (isPlainObject(item) && Reflect.has(item, textField)) {
             return item[textField] // 提取对象中的 label
           }
           return String(item) // 其他类型转为字符串
@@ -99,10 +117,14 @@
         .join(', ') // 组合为逗号分隔的文本
         .value()
     }
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       return String((value as Record<string, unknown>)[textField] || '') // 纯对象提取 label
     }
     return '' // 其他情况返回空字符串
+  }
+
+  const getColSpan = (item: ConfigItemType) => {
+    return item?.colNum ? 24 / item?.colNum : 12
   }
 
   const getFormComp = (item: ConfigItemType) => {
@@ -159,7 +181,7 @@
       if (
         !item?.compConfig?.code &&
         item?.compConfig?.customOptions &&
-        _.isEmpty(options.value[index])
+        isEmpty(options.value[index])
       ) {
         await getOptions(item, index)
       }

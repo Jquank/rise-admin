@@ -1,25 +1,26 @@
 <template>
-  <el-radio-group v-model="val">
-    <el-radio
+  <el-select v-model="val" @clear="handleClear" :value-key="props.valueField">
+    <el-option
       v-for="item in props.optionData"
       :key="item[props.valueField]"
-      :value="item[props.valueField]"
-      >{{ item[props.textField] }}</el-radio
-    >
-    <template v-for="slot in $slots" v-slot:[slot] :key="slot">
+      :value="item"
+      :label="item[props.textField]"></el-option>
+
+    <template v-for="(_, slot) in $slots" v-slot:[slot] :key="slot">
       <slot :name="slot"></slot>
     </template>
-  </el-radio-group>
+  </el-select>
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue'
+  import type { WritableComputedRef } from 'vue'
   import { defaultTextField, defaultValueField } from '../const'
+  import { useVModel } from '@vueuse/core'
 
   const props = defineProps({
     modelValue: {
       type: Object,
-      default: () => ({})
+      default: null
     },
     optionData: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,14 +36,14 @@
       default: defaultValueField
     }
   })
-  const emits = defineEmits(['update:modelValue'])
 
-  const val = computed({
-    get: () => props.modelValue?.[props.valueField] || null,
-    set: (newVal) =>
-      emits(
-        'update:modelValue',
-        props.optionData.find((item) => item[props.valueField] === newVal) || ''
-      )
-  })
+  const emits = defineEmits(['update:modelValue', 'clear'])
+  const val = useVModel(props, 'modelValue', emits) as WritableComputedRef<
+    Record<string, unknown> | ''
+  >
+
+  const handleClear = () => {
+    val.value = ''
+    emits('clear')
+  }
 </script>

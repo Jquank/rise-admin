@@ -8,6 +8,7 @@ export interface ConfigItemType {
   customType?: Component
   required?: boolean
   rule?: unknown[]
+  colNum?: number
   itemConfig?: Record<string, unknown>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   compConfig?: Record<string, any>

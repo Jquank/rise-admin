@@ -36,6 +36,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'form',
         meta: { title: '配置化表单', deep: 2 },
         component: () => import('@/examples/form/index.vue')
+      },
+      {
+        path: 'table',
+        name: 'table',
+        meta: { title: '表格', deep: 2, noUseGlobalScrollbar: true },
+        component: () => import('@/examples/table/index.vue')
       }
     ]
   }

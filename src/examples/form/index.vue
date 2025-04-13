@@ -8,15 +8,11 @@
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
   import { RForm, type ConfigItemType } from '@jquank/rise-ui'
-  // import { RForm, type ConfigItemType } from '@lib/riseui'
-  // import RSelect from '@/components/form/components/r-select.vue'
   const formData = ref<object>({})
   const formRef = ref()
   const sexDisabled = ref(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkDemo = (_: any, value: any, callback: any) => {
-    console.log(value, '00')
-
     if (!value) {
       callback(new Error('请输入团队'))
     } else {
@@ -85,6 +81,7 @@
         prop: 'remark',
         label: '建议',
         type: 'editor',
+        colNum: 1,
         compConfig: {}
       }
     ]
