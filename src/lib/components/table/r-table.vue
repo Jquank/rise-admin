@@ -1,12 +1,11 @@
 <template>
-  <el-auto-resizer class="r-table-box">
+  <el-auto-resizer class="r-table-box" v-loading="props.loading">
     <template #default="{ width }">
       <el-table
         ref="tableRef"
         :data="props.data"
         @sort-change="sortChange"
         v-bind="$attrs"
-        v-loading="props.loading"
         :class="{
           'height-fill-up': props.heightFillUp
         }">

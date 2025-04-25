@@ -3,6 +3,9 @@ export const barData = {
   posi: [{}], // 卡片的位置信息，由前端给
   title: '商品销售数量',
   value: '1200.00',
+  // 图表类型，EchartComponent、 NumberChart...
+  type: '2',
+  size: 'middle',
   data: [
     {
       // 图表类型，0，1，2，3，4...
@@ -19,7 +22,11 @@ export const barData = {
         { '2022-01': 83.1, '2022-02': 73.4, '2022-03': 55.1 },
         { '2022-01': 72.4, '2022-02': 53.9, '2022-03': 39.1 },
         { '2022-01': 72.4, '2022-02': 53.9, '2022-03': 39.1 }
-      ]
+      ],
+      // 环比上涨
+      up: '15%',
+      // 环比下降
+      down: '10%'
     }
   ]
 }
@@ -108,9 +115,9 @@ export const numberDataMock = {
   title: '商品销售数量',
   value: '1200.00',
   // 图表类型，0，1，2，3，4...
-  graphType: 1,
+  type: '50',
   // 图表大小
-  graphSize: 'SMALL',
+  size: 'SMALL',
   // 单位
   unit: '',
   // 图表数据

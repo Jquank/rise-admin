@@ -23,8 +23,7 @@
       v-model="dialogVisible"
       title="角色编辑"
       width="50%"
-      :append-to-body="true"
-    >
+      :append-to-body="true">
       <el-button class="ml-24 mb-20" type="primary" @click="assignUser"
         >账户分配</el-button
       >
@@ -53,8 +52,7 @@
         :data="routerOptionsClone"
         node-key="name"
         :default-checked-keys="defaultCheckedKeys"
-        show-checkbox
-      />
+        show-checkbox />
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="confirm"> 确定 </el-button>
@@ -66,27 +64,23 @@
       v-model="addDialogVisible"
       title="新增角色"
       width="50%"
-      :append-to-body="true"
-    >
+      :append-to-body="true">
       <el-form
         ref="addRoleFormRef"
         :model="addRoleFormModel"
-        :rules="addRoleFormRules"
-      >
+        :rules="addRoleFormRules">
         <el-form-item label="角色名称" prop="name">
           <el-input
             v-model="addRoleFormModel.name"
             maxlength="20"
-            placeholder="角色名称"
-          ></el-input>
+            placeholder="角色名称"></el-input>
         </el-form-item>
         <el-form-item label="角色描述" prop="desc">
           <el-input
             v-model="addRoleFormModel.desc"
             maxlength="200"
             placeholder="角色描述"
-            type="textarea"
-          ></el-input>
+            type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -102,8 +96,7 @@
       v-model="toUserDialogVisible"
       title="选择用户"
       width="50%"
-      :append-to-body="true"
-    >
+      :append-to-body="true">
       <el-tree
         ref="userTreeRef"
         :props="assignProps"
@@ -111,8 +104,7 @@
         node-key="id"
         :default-checked-keys="userDefaultCheckedKeys"
         show-checkbox
-        default-expand-all
-      />
+        default-expand-all />
       <template #footer>
         <el-button @click="toUserDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="assignUserConfirm"> 确定 </el-button>

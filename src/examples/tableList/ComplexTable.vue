@@ -2,13 +2,11 @@
   <div class="standrad-list">
     <div
       class="standrad-list-box"
-      :style="{ height: $route.name === 'complex-table' ? '100%' : '0' }"
-    >
+      :style="{ height: $route.name === 'complex-table' ? '100%' : '0' }">
       <GridCollapse
         class="grid-collapse-box"
         :loading="showTableLoading"
-        @search="handleSearch"
-      >
+        @search="handleSearch">
         <el-form label-width="auto" :model="searchModel">
           <el-form-item prop="value1" label="分组1分组1">
             <el-input v-model="searchModel.value1" />
@@ -37,21 +35,18 @@
             label="序号"
             width="60"
             align="center"
-            fixed="left"
-          />
+            fixed="left" />
           <el-table-column prop="id" label="ID" min-width="80" align="center" />
           <el-table-column
             prop="name"
             label="名称"
             min-width="120"
-            align="center"
-          />
+            align="center" />
           <el-table-column
             prop="state"
             label="状态"
             min-width="80"
-            align="center"
-          >
+            align="center">
             <template #default="scope">
               <span>{{ scope.row.state === true ? '在线' : '忙碌' }}</span>
             </template>
@@ -60,28 +55,24 @@
             prop="time"
             label="创建时间"
             width="170"
-            align="center"
-          />
+            align="center" />
           <el-table-column
             prop="note"
             label="备注"
             min-width="150"
-            align="center"
-          />
+            align="center" />
           <el-table-column
             label="操作"
             width="120"
             align="center"
-            fixed="right"
-          >
+            fixed="right">
             <template #default="scope">
               <el-dropdown
                 @click="view(scope.row)"
                 size="small"
                 trigger="hover"
                 split-button
-                type="primary"
-              >
+                type="primary">
                 查看
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -93,7 +84,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <ListPagination :callback="listSerach" />
+        <RPagination :callback="listSerach" />
       </div>
     </div>
     <router-view></router-view>
@@ -105,11 +96,11 @@
   import { useRouter } from 'vue-router'
   import GridCollapse from '@/components/GridCollapse.vue'
   import { listApi, ListType } from '@/api/index'
-  import ListPagination from '@/components/ListPagination.vue'
+  import { RPagination } from '@jquank/rise-ui'
 
   const router = useRouter()
   const tableData = ref<ListType.Res_getList[]>([])
-  let pageParams: PageParams
+  let pageParams: Record<string, any> = {}
   const searchModel = reactive({
     value1: '',
     value2: '',
@@ -121,7 +112,7 @@
   })
 
   const showTableLoading = ref(false)
-  const listSerach = (page: PageParams) => {
+  const listSerach = (page) => {
     if (page) pageParams = page
     showTableLoading.value = true
     let params = Object.assign({}, pageParams, searchModel)

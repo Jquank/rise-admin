@@ -168,18 +168,28 @@ export const findPathTreeByValue = <
   const result: T[] = []
   let resItem: T[] = []
   let path: T[] = []
+  let currentAuthRoutePath = ''
   // 深度遍历并回溯，把满足当前条件的全路径节点存入resItem
   function dfs(root: T) {
     if (!root) return []
     path.push(root)
+
     if (value.includes(root[prop])) {
+      // 找到权限路由
+      currentAuthRoutePath = root.path
+      resItem.push(...path)
+    } else if (
+      root.path.includes('/:') &&
+      root.path.includes(currentAuthRoutePath)
+    ) {
+      // 找到相邻的详情路由（如果有）, 规则是详情路由的path包含权限路由的path和:/
       resItem.push(...path)
     }
     if (root.children) {
       root.children.forEach((c) => {
         dfs(c)
       })
-      // 找到相邻的详情路由（如果有）
+      // 找到相邻的详情路由（如果有）， 规则是详情路由的path包含权限路由的path和:/
       try {
         const sibings = root.children.filter(
           (r) => r.path.includes('/:') && r.path.includes(root.path)

@@ -6,4 +6,6 @@ export type { SearchMethod } from './components/pagination/types'
 
 import { RTable, mergeColumnConfig } from './components/table'
 
-export { RForm, RPagination, RTable, mergeColumnConfig }
+import { RGridCollapse } from './components/grid-collapse'
+
+export { RForm, RPagination, RTable, mergeColumnConfig, RGridCollapse }

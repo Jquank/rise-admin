@@ -3,8 +3,7 @@
     <ChartTitle
       v-if="props.showTitle"
       :title="data.title"
-      :value="data.value"
-    />
+      :value="data.value" />
     <div ref="chartRef" class="inner-chart-box"></div>
   </div>
 </template>
@@ -24,10 +23,10 @@
   import {
     getBarOptions,
     getBarDelayOptions,
-    getLineOptions,
-    EchartType
+    getLineOptions
   } from './echartsOptions'
   import { debounce } from 'lodash-es'
+  import { GraphType } from '../dragChart/type'
 
   interface SelfEvent extends Event {
     resizeEcharts: boolean
@@ -35,14 +34,14 @@
 
   const props = withDefaults(
     defineProps<{
-      echartType?: EchartType // echarts的类型
+      type?: GraphType // echarts的类型
       showTitle?: boolean // 是否显示title
       i?: string // 当前卡片的i
       resizeI?: string // 当前改变大小的grid-item的i
       gridItemResizeFlag?: string // grid-item的resized事件触发标志
     }>(),
     {
-      echartType: EchartType.BarEchart,
+      type: GraphType.BAR,
       showTitle: true,
       i: '',
       resizeI: '',
@@ -51,15 +50,15 @@
   )
 
   const getOptionsFunc = computed(() => {
-    switch (props.echartType) {
-      case EchartType.BarEchart:
+    switch (props.type) {
+      case GraphType.BAR:
         return getBarOptions
-      case EchartType.BarDelayEchart:
+      case GraphType.BARDELAY:
         return getBarDelayOptions
-      case EchartType.LineEchart:
+      case GraphType.LINE:
         return getLineOptions
       default:
-        throw new Error('wrong chart type')
+        return getBarOptions
     }
   })
 

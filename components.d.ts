@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ChartRender: typeof import('./src/components/dragChart/chart-render.vue')['default']
+    ChartsRender: typeof import('./src/components/charts/charts-render.vue')['default']
     ChartTitle: typeof import('./src/components/charts/ChartTitle.vue')['default']
     DragWrapper: typeof import('./src/components/dragChart/DragWrapper.vue')['default']
     DropArea: typeof import('./src/components/dragChart/DropArea.vue')['default']

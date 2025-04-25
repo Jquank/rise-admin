@@ -1,6 +1,6 @@
 <template>
   <div class="chart-inner">
-    <ChartTitle :title="props.data.title" :value="props.data.value" />
+    <ChartTitle v-bind="{ ...pick($attrs, ['title', 'value']) }" />
     <div class="number-footer">
       <span>
         <SvgIcon icon="shangjiantou" color="rgb(82, 196, 26)" />
@@ -16,21 +16,7 @@
 
 <script setup lang="ts">
   import ChartTitle from './ChartTitle.vue'
-  const props = defineProps({
-    data: {
-      type: Object,
-      default: () => ({})
-    }
-  })
-
-  // const data = reactive({
-  //   title: ['商品销售总量', '近七日销售额', '搜索次数', '优惠券发放量'][
-  //     +props.i!
-  //   ],
-  //   value: Math.floor(Math.random() * 10000) + '.00',
-  //   up: Math.floor(Math.random() * 100) + '%',
-  //   down: Math.floor(Math.random() * 100) + '%'
-  // })
+  import { pick } from 'lodash-es'
 </script>
 
 <style lang="less" scoped>

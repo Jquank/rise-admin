@@ -1,7 +1,7 @@
 <template>
   <div class="grid-collapse-box" ref="gridCollapseRef">
     <component :is="elFormVnode ? elFormVnode : 'div'" ref="elFormRef">
-      <el-row :gutter="10" class="slot-el-row">
+      <el-row :gutter="20" class="slot-el-row">
         <el-col
           v-for="(vnode, index) in vnodesArr"
           :key="index"
@@ -12,25 +12,20 @@
           :xl="breakPoint.xl"
           ref="colRefs"
           :class="{
-            'hidden-xs-only xs':
-              defaultCollapse && index > 24 / breakPoint.xs - 2,
-            'hidden-sm-only sm':
-              defaultCollapse && index > 24 / breakPoint.sm - 2,
-            'hidden-md-only md':
-              defaultCollapse && index > 24 / breakPoint.md - 2,
-            'hidden-lg-only lg':
-              defaultCollapse && index > 24 / breakPoint.lg - 2,
-            'hidden-xl-only xl':
-              defaultCollapse && index > 24 / breakPoint.xl - 2
+            'hidden-xs-only xs': hiddenCol(index, 'xs'),
+            'hidden-sm-only sm': hiddenCol(index, 'sm'),
+            'hidden-md-only md': hiddenCol(index, 'md'),
+            'hidden-lg-only lg': hiddenCol(index, 'lg'),
+            'hidden-xl-only xl': hiddenCol(index, 'xl')
           }">
           <component :is="vnode"></component>
         </el-col>
         <el-col
-          :xs="breakPoint.xs"
-          :sm="breakPoint.sm"
-          :md="breakPoint.md"
-          :lg="breakPoint.lg"
-          :xl="breakPoint.xl"
+          :xs="originBreakPoint.xs"
+          :sm="originBreakPoint.sm"
+          :md="originBreakPoint.md"
+          :lg="originBreakPoint.lg"
+          :xl="originBreakPoint.xl"
           ref="lastColRef"
           class="expand-or-collapse">
           <el-button @click="reset" v-if="showActionBtn">重置</el-button>
@@ -57,12 +52,13 @@
 <script setup lang="ts">
   import {
     ref,
+    reactive,
     useSlots,
     type VNode,
-    type ComponentPublicInstance,
-    watchEffect
+    type ComponentPublicInstance
   } from 'vue'
   import type { FormInstance } from 'element-plus'
+  import { cloneDeep } from 'lodash-es'
 
   const props = defineProps({
     // 默认折叠
@@ -83,12 +79,7 @@
     // 是否开启折叠动画
     animation: {
       type: Boolean,
-      default: false
-    },
-    // 取消栅格，即默认设置跨度为24的栅格
-    cancelGrid: {
-      type: Boolean,
-      default: false
+      default: true
     },
     loading: {
       type: Boolean,
@@ -97,13 +88,14 @@
   })
   const emits = defineEmits(['search', 'reset'])
 
-  const breakPoint = {
+  const originBreakPoint = {
     xs: 24,
     sm: 12,
     md: 8,
     lg: 6,
     xl: 4
   }
+  const breakPoint = reactive(cloneDeep(originBreakPoint))
   const defaultCollapse = ref(props.defaultCollapseState)
   const slots = useSlots()
   let defaultSlots = slots.default ? slots.default() : []
@@ -115,13 +107,12 @@
   const gridCollapseRef = ref<HTMLElement | null>(null)
   const lastColRef = ref<ComponentPublicInstance | null>(null)
 
-  watchEffect(() => {
-    if (props.cancelGrid) {
-      Object.keys(breakPoint).forEach((k) => {
-        ;(breakPoint[k as keyof typeof breakPoint] as number) = 24
-      })
-    }
-  })
+  /** 隐藏栅格的条件 */
+  const hiddenCol = (index: number, key: keyof typeof breakPoint) => {
+    return (
+      defaultCollapse.value && index + 1 > Math.ceil(24 / breakPoint[key] - 1)
+    )
+  }
 
   /** 处理el-form和el-form-item的vnode */
   const handleElFormVnode = () => {
@@ -137,6 +128,7 @@
           (v.type as unknown as { name: string }).name === 'ElForm'
         )
       })
+      // 如果默认插槽传入了el-form，单独处理其栅格布局
       if (index > -1) {
         let originElFormVnode = defaultSlots.splice(
           index,
@@ -253,6 +245,7 @@
     }
     .slot-el-row {
       width: 100%;
+      align-items: end;
       .el-col {
         margin-bottom: 18px;
       }

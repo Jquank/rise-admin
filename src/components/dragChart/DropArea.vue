@@ -4,8 +4,7 @@
     id="card-drag-content"
     @drop="drop"
     @dragenter="dragenter"
-    @dragover="dragover"
-  >
+    @dragover="dragover">
     <grid-layout
       ref="layoutRef"
       v-model:layout="layout"
@@ -15,8 +14,7 @@
       :is-resizable="true"
       :vertical-compact="true"
       :use-css-transforms="true"
-      :margin="[24, 24]"
-    >
+      :margin="[24, 24]">
       <grid-item
         v-for="item in layout"
         :ref="getItemRef"
@@ -26,36 +24,29 @@
         :w="item.w"
         :h="item.h"
         :i="item.i"
-        @resized="resized"
-      >
+        @resized="resized">
         <div
           @click="chartClick(item)"
           :class="[
             'chart-wrapper',
             activeI === item.i ? 'chart-wrapper-acrive' : ''
-          ]"
-        >
+          ]">
           <!-- <component
             v-once
-            :is="getCurrentComponent(item.graphType)"
+            :is="getCurrentComponent(item.type)"
             :data="item"
-            :echartType="item.graphType"
+            :echartType="item.type"
             :i="item.i"
             :resizeI="resizeI"
             :gridItemResizeFlag="gridItemResizeFlag"
           ></component> -->
-          <component
-            :is="getCurrentComponent(item)"
-            :data="item"
-            :echartType="item.graphType"
-          ></component>
+          <component :is="getCurrentComponent(item)" v-bind="item"></component>
           <SvgIcon
             v-show="activeI === item.i"
             class="chart-delete"
             icon="levels"
             :size="20"
-            color="red"
-          ></SvgIcon>
+            color="red"></SvgIcon>
         </div>
       </grid-item>
     </grid-layout>
@@ -84,10 +75,16 @@
   } from './type'
   import { cloneDeep, debounce } from 'lodash-es'
   import SvgIcon from '../SvgIcon.vue'
+  import { GraphType } from './type'
   const props = defineProps({
     modelValue: {
       type: Array as PropType<GraphItemType[]>,
       default: () => []
+    },
+    /** 自定义组件，不要用数字作key，区分内置组件 */
+    customGraphs: {
+      type: Object,
+      default: () => ({})
     }
   })
   const chartClick = (item: any) => {
@@ -168,8 +165,8 @@
           (item) => item.uuid === activeUUID.value
         )
         if (item) {
-          let w = formatWH(data[index].graphSize!, 'W')
-          let h = formatWH(data[index].graphSize!, 'H')
+          let w = formatWH(data[index].size!, 'W')
+          let h = formatWH(data[index].size!, 'H')
           let x = item.x
           let y = item.y
           // 处理大小变化的右侧边界情况
@@ -248,13 +245,17 @@
   }
 
   const getCurrentComponent = (item: any) => {
-    if (!item.graphType) {
-      return
+    const type = item.type
+    if (!type) return null
+    // 自定义组件
+    if (String(+type) === 'NaN') return props.customGraphs[type]
+    if (type === GraphType.NUMBER) {
+      // 预设的数字图表
+      return NumberChart
+    } else {
+      // 预设的echart图表统一使用EchartComponent组件渲染
+      return EchartComponent
     }
-    // echart图表统一使用EchartComponent组件渲染
-    // if (type != 0) return EchartComponent
-    // return selfChartList[type]
-    return NumberChart
   }
   const dragenter = (e: DragEvent) => {
     showEmptyIcon.value = false

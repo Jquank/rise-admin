@@ -5,7 +5,7 @@
         class="grid-collapse-box"
         :loading="showTableLoading"
         @search="listSerach"
-      >
+        animation>
         <el-form label-width="auto" :model="searchModel">
           <el-form-item prop="value1" label="分组1分组1">
             <el-input v-model="searchModel.value1" />

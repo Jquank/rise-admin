@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@jquank/rise-ui": "^1.0.4",
     "@tinymce/tinymce-vue": "^5",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.2",

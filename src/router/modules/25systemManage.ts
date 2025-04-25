@@ -1,11 +1,9 @@
 import { RouteRecordRaw } from 'vue-router'
-import EmptyRouterView from '@/components/EmptyRouterView.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: 'system-manage',
     name: 'system-manage',
     meta: { title: '系统管理', icon: 'fenzuguanli', deep: 1 },
-    component: EmptyRouterView,
     children: [
       {
         path: 'role',

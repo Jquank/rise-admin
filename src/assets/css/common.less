@@ -42,6 +42,14 @@ each(@font-weight-list, {
   }
 });
 
+.w-max-80 {
+  max-width: 80%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 // 主背景色
 .bg-main {
   background-color: var(--main-bg-color);
@@ -71,6 +79,22 @@ each(@font-weight-list, {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.multiline-ellipsis-base {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 多行省略号
+@line-clamp: 2 3 4 5 6 7 8;
+each(@line-clamp, {
+  .multiline-ellipsis-@{value} {
+    .multiline-ellipsis-base;
+    -webkit-line-clamp: @value;
+    line-clamp: @value;
+  }
+});
 
 // flex布局下的el-table高度自适应
 .auto-height-table-box {

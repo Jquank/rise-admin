@@ -401,11 +401,6 @@
   resolved "https://registry.npmmirror.com/@intlify/shared/-/shared-9.8.0.tgz#62adf8f6ef67c8eba6cf8d521e248f3503f237d3"
   integrity sha512-TmgR0RCLjzrSo+W3wT0ALf9851iFMlVI9EYNGeWvZFUQTAJx0bvfsMlPdgVtV1tDNRiAfhkFsMKu6jtUY1ZLKQ==
 
-"@jquank/rise-ui@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@jquank/rise-ui/-/rise-ui-1.0.4.tgz#7aafd7b3193a8ac6020eb48ad90bd7d2dedbc390"
-  integrity sha512-VqqH69bgeCFOacS/Bacj8Llurbz2CIAlAMlk8xJQJ83HWHUjktaL7ildxmNoZ1pnZlvgi0K2/Cy+5ldVRCCI5A==
-
 "@jridgewell/sourcemap-codec@^1.4.15":
   version "1.4.15"
   resolved "https://registry.npmmirror.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.15.tgz#d7c6e6755c78567a951e04ab52ef0fd26de59f32"

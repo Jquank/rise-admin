@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/** 图表类型定义 */
+/** 预设的图表类型 */
+export enum GraphType {
+  BAR = '1',
+  BARDELAY = '2',
+  LINE = '3',
+  PIE = '4',
+  AREA = '5',
+  GAUGE = '6',
+  NUMBER = '50'
+}
 export enum GraphKeyEnum {
   'LINE' = 'LINE',
   'BAR' = 'BAR',
@@ -25,8 +34,8 @@ export type GraphSizeType = keyof typeof GraphSizeEnum
 export type GraphItemType = {
   [x: string]: any
   uuid?: string
-  graphSize?: GraphSizeType
-  graphType?: GraphKeyType
+  size?: GraphSizeType
+  type?: GraphKeyType
   isFirst?: boolean
   graphs?: GraphItemType[]
 }

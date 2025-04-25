@@ -7,7 +7,8 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
-  import { RForm, type ConfigItemType } from '@jquank/rise-ui'
+  // import { RForm, type ConfigItemType } from '@jquank/rise-ui'
+  import { RForm, type ConfigItemType } from '@/lib/components/form'
   const formData = ref<object>({})
   const formRef = ref()
   const sexDisabled = ref(false)
@@ -23,9 +24,20 @@
     return [
       {
         prop: 'name',
-        label: '名称',
+        label: '名称111111111122222222222222222222222222222',
         type: 'input',
         required: true,
+        // itemConfig: {
+        //   slots: [
+        //     {
+        //       name: 'label',
+        //       content: {
+        //         type: 'html',
+        //         value: '<h1>1111</h1>'
+        //       }
+        //     }
+        //   ]
+        // },
         compConfig: {
           disabled: sexDisabled.value
           // slots: [

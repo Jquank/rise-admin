@@ -1,9 +1,18 @@
 <template>
   <div class="dashboard-edit">
     <div class="edit-header">
-      <PageHeader>
-        <template #left>编辑</template>
-      </PageHeader>
+      <el-page-header @back="$router.go(-1)" class="padding-10">
+        <template #icon>
+          <SvgIcon icon="arrow-left"></SvgIcon>
+        </template>
+        <template #content>
+          <span class="font-weight-500">看板1</span>
+          <SvgIcon icon="arrow-left" class="cursor-pointer ml-10"></SvgIcon>
+        </template>
+        <template #extra>
+          <el-button type="primary" class="mr-10">保存</el-button>
+        </template>
+      </el-page-header>
     </div>
     <div class="edit-content">
       <div class="edit-left">
@@ -14,17 +23,14 @@
               :props="defaultProps"
               :data="treeData"
               node-key="id"
-              default-expand-all
-            >
+              default-expand-all>
               <template #default="{ node, data }">
                 <DragWrapper
                   :nodeData="node"
-                  v-if="!data.children || !data.children.length"
-                >
+                  v-if="!data.children || !data.children.length">
                   <div
                     class="custom-node ellipsis"
-                    @click="nodeClick(node, data)"
-                  >
+                    @click="nodeClick(node, data)">
                     <span>{{ node.label }}</span>
                   </div>
                 </DragWrapper>
@@ -39,24 +45,22 @@
       </div>
       <el-scrollbar class="edit-center" view-class="drop-area-scrollbar-view">
         <DropArea
+          :customGraphs="{ button: ElButton }"
           @add="dropAdd"
           @active="chartActive"
-          v-model="layoutData"
-        ></DropArea>
+          v-model="layoutData"></DropArea>
       </el-scrollbar>
       <div class="edit-right">
         <el-form
           label-position="top"
           label-width="auto"
           :model="chartConfig"
-          :disabled="configDisabled"
-        >
+          :disabled="configDisabled">
           <el-form-item label="名称:">
             <el-input
               v-model="chartConfig.name"
               maxlength="20"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="类型:">
             <div class="icon-list">
@@ -68,13 +72,11 @@
                   'icon-item',
                   configDisabled ? 'disabled' : '',
                   activeType === item.type ? 'active' : ''
-                ]"
-              >
+                ]">
                 <SvgIcon
                   :icon="item.name"
                   :size="25"
-                  color="var(--el-text-color-regular)"
-                ></SvgIcon>
+                  color="var(--el-text-color-regular)"></SvgIcon>
               </div>
             </div>
           </el-form-item>
@@ -87,10 +89,11 @@
 <script setup lang="ts">
   import { ref, reactive } from 'vue'
   import { roleApi, type RoleType, userApi, type UserType } from '@/_api/index'
-  import PageHeader from '@/components/PageHeader.vue'
   import DragWrapper from '@/components/dragChart/DragWrapper.vue'
   import { numberDataMock } from '@/components/charts/mock'
   import DropArea from '@/components/dragChart/DropArea.vue'
+  import { ElButton } from 'element-plus'
+  import { iconList } from '@/components/dragChart/icon'
 
   interface IconType {
     name: string
@@ -103,14 +106,6 @@
       default: () => ({})
     }
   })
-  const iconList: IconType[] = [
-    { name: 'number-chart', type: 1 },
-    { name: 'bar-chart', type: 2 },
-    { name: 'line-chart', type: 3 },
-    { name: 'pie-chart', type: 4 },
-    { name: 'circle-chart', type: 5 },
-    { name: 'yibiaopan2', type: 6 }
-  ]
   const configDisabled = ref(true)
   // #region 指标树
   const treeData = ref<UserType.Res_getUserDepartmentTree[]>([])
@@ -138,7 +133,7 @@
   }
   const chartActive = (item: any) => {
     if (item.i) {
-      activeType.value = item.graphType
+      activeType.value = item.type
       configDisabled.value = false
     }
   }
@@ -175,6 +170,7 @@
     z-index: 999;
     background-color: var(--main-bg-color);
     .edit-header {
+      border-bottom: 1px solid var(--el-border-color);
     }
     .edit-content {
       flex: 1;

@@ -2,9 +2,9 @@ import { barData, lineData, barDelayData } from './mock'
 import echarts from './baseEchartsSettings'
 
 export enum EchartType {
-  BarEchart = 'BarEchart',
-  BarDelayEchart = 'BarDelayEchart',
-  LineEchart = 'LineEchart'
+  BarEchart = '1',
+  BarDelayEchart = '2',
+  LineEchart = '3'
 }
 
 interface OptionsType {

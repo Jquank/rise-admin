@@ -4,12 +4,11 @@
     :model="formData"
     v-bind="{
       labelWidth: 'auto',
-      labelSuffix: ' :',
       validateOnRuleChange: false,
       ...$attrs,
       ...{ rules }
     }">
-    <el-row>
+    <el-row :gutter="20">
       <el-col
         v-for="(item, index) in props.config"
         :key="item.prop"
@@ -20,6 +19,39 @@
             label: item.label,
             ...item?.itemConfig
           }">
+          <template #label="{ label }">
+            <el-tooltip
+              :visible="labelTooltipVisibleArr[index].visible"
+              effect="dark"
+              placement="top-start">
+              <template #content>
+                {{ label }}
+              </template>
+              <span
+                class="custom-form-item-label"
+                @mouseenter="labelMouseEneter($event, index)"
+                @mouseleave="labelMouseLeave(index)"
+                >{{ label }}</span
+              >
+            </el-tooltip>
+            <span>&nbsp;:</span>
+          </template>
+          <!-- 处理el-form-item插槽，支持text,html,组件 -->
+          <template
+            v-for="slot in item?.itemConfig?.slots || []"
+            :key="slot.name"
+            v-slot:[slot.name]>
+            <div
+              v-if="slot.content?.type === 'text'"
+              v-text="slot.content.value"></div>
+            <div
+              v-else-if="slot.content?.type === 'html'"
+              v-html="slot.content.value"></div>
+            <component
+              v-else
+              :is="slot.content?.type"
+              v-bind="slot.content.value || {}"></component>
+          </template>
           <!-- readonly 渲染文本 -->
           <span v-if="props.readonly" class="form-item-text">
             {{ getLabel(formData[item.prop], item.compConfig?.textField) }}
@@ -37,7 +69,7 @@
             v-model="formData[item.prop]"
             @focus="compFocus(item, index)"
             style="width: 100%">
-            <!-- 处理插槽，支持text,html,组件 -->
+            <!-- 处理组件插槽，支持text,html,组件 -->
             <template
               v-for="slot in item.compConfig?.slots || []"
               :key="slot.name"
@@ -128,7 +160,6 @@
   }
 
   const getFormComp = (item: ConfigItemType) => {
-    if (props.readonly) return 'span'
     return item.type ? compMap[item.type] : item.customType
   }
 
@@ -175,7 +206,7 @@
     }
   }
 
-  // code不存在时，自动获取customOptions
+  // code不存在时，自动获取customOptions，顺便扩展_tootipVisible字段
   watchEffect(() => {
     props.config.forEach(async (item, index) => {
       if (
@@ -186,6 +217,7 @@
         await getOptions(item, index)
       }
     })
+    console.log(props.config, '11232')
   })
 
   // code存在时，focus事件获取数据
@@ -222,6 +254,23 @@
         return prev
       }, {})
   })
+  const labelTooltipVisibleArr = ref(
+    Array.from({ length: props.config.length || 100 }, () => ({
+      visible: false
+    }))
+  )
+
+  const labelMouseEneter = (e: MouseEvent, index: number) => {
+    const tar = e.target as HTMLElement
+    if (tar.scrollWidth > tar.clientWidth) {
+      labelTooltipVisibleArr.value[index].visible = true
+    } else {
+      labelTooltipVisibleArr.value[index].visible = false
+    }
+  }
+  const labelMouseLeave = (index: number) => {
+    labelTooltipVisibleArr.value[index].visible = false
+  }
 
   defineExpose({
     formRef
@@ -231,5 +280,12 @@
 <style lang="less" scoped>
   .form-item-text {
     word-break: break-all;
+  }
+  .custom-form-item-label {
+    width: 100%;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>
