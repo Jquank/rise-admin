@@ -1,18 +1,7 @@
-import { barData, lineData, barDelayData } from './mock'
-import echarts from './baseEchartsSettings'
-
-export enum EchartType {
-  BarEchart = '1',
-  BarDelayEchart = '2',
-  LineEchart = '3'
-}
+import echarts from './base-echarts-settings'
 
 interface OptionsType {
   echartsOptions: echarts.EChartsCoreOption
-  baseData: {
-    title: string
-    value: string | undefined
-  }
 }
 
 const defaultOptions = {
@@ -38,13 +27,12 @@ const defaultOptions = {
   }
 }
 
-export const getBarOptions = (): OptionsType => {
-  const data = barData.data[0]
+export const getBarOptions = (data): OptionsType => {
   const seriesData = new Array(data.legendData.length).fill({
     type: 'bar'
   })
   const source = data.xAxisData.map((d, index) => {
-    return { product: d, ...data.yAxis[index] }
+    return { product: d, ...data.yAxisData[index] }
   })
   return {
     echartsOptions: {
@@ -63,21 +51,16 @@ export const getBarOptions = (): OptionsType => {
         type: 'value',
         splitLine: defaultOptions.splitLine
       }
-    },
-    baseData: {
-      title: barData.title,
-      value: barData.value
     }
   }
 }
 
-export const getBarDelayOptions = (): OptionsType => {
-  const data = barDelayData.data[0]
+export const getBarDelayOptions = (data): OptionsType => {
   const seriesData = data.legendData.map((d, index) => {
     return {
       name: d,
       type: 'bar',
-      data: data.yAxis[index],
+      data: data.yAxisData[index],
       emphasis: {
         focus: 'series'
       },
@@ -117,16 +100,11 @@ export const getBarDelayOptions = (): OptionsType => {
         type: 'value',
         splitLine: defaultOptions.splitLine
       }
-    },
-    baseData: {
-      title: barDelayData.title,
-      value: barDelayData.value
     }
   }
 }
 
-export const getLineOptions = (): OptionsType => {
-  const data = lineData.data[0]
+export const getLineOptions = (data): OptionsType => {
   const seriesData = data.legendData.map((d, index) => {
     return {
       name: d,
@@ -136,7 +114,7 @@ export const getLineOptions = (): OptionsType => {
       emphasis: {
         focus: 'series'
       },
-      data: data.yAxis[index]
+      data: data.yAxisData[index]
     }
   })
   return {
@@ -162,10 +140,6 @@ export const getLineOptions = (): OptionsType => {
         type: 'value',
         splitLine: defaultOptions.splitLine
       }
-    },
-    baseData: {
-      title: lineData.title,
-      value: lineData.value
     }
   }
 }

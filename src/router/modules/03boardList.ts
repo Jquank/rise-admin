@@ -26,7 +26,7 @@ const routes: Array<RouteRecordRaw> = [
       show: false,
       activeMenu: '/boards'
     },
-    component: () => import('@/views/dashboard/EditPage.vue')
+    component: () => import('@/examples/board-list/board-edit.vue')
   }
 ]
 export default routes

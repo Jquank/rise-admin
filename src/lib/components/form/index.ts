@@ -1,4 +1,4 @@
 import RForm from './r-form.vue'
 export { RForm }
 
-export type * from './types'
+export type { ConfigItemType } from './types'

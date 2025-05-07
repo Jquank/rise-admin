@@ -1,11 +1,23 @@
 <template>
   <div class="home-container">
-    <!-- <ChartRender /> -->
+    <ChartRender :data="mockData.cards" />
   </div>
 </template>
 
 <script setup lang="ts">
-  // import ChartRender from '@/components/dragChart/chart-render.vue'
+  import { ChartRender } from '@/lib/components/drag-chart'
+  import {
+    numberDataMocked,
+    barDataMocked,
+    lineDataMocked
+  } from '@/examples/board-list/mock'
+
+  const mockData = {
+    id: '1',
+    title: '看板1',
+    desc: '看板1描述',
+    cards: [numberDataMocked, barDataMocked, lineDataMocked]
+  }
 </script>
 
 <style lang="less" scoped>

@@ -46,7 +46,7 @@ const routes: Array<RouteRecordRaw> = [
           show: false,
           activeMenu: '/list-table/card-list'
         },
-        component: () => import('@/views/dashboard/EditPage.vue')
+        component: () => import('@/examples/board-list/board-edit.vue')
       }
     ]
   }

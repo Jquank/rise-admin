@@ -70,7 +70,7 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { listApi, ListType } from '@/api/index'
-  import { RGridCollapse } from '@/lib/components/grid-collapse'
+  import { RGridCollapse } from '@jquank/rise-ui'
   const router = useRouter()
   const tableData = ref<ListType.Res_getList[]>([])
   const searchModel = reactive({

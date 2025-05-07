@@ -31,8 +31,8 @@
     return `<SvgIcon :icon="${str}"></SvgIcon>`
   }
   const urls = [
-    iconfontURL,
-    'https://at.alicdn.com/t/c/font_4380660_b9lbte90tyr.js'
+    // iconfontURL,
+    'https://at.alicdn.com/t/c/font_4380660_y9o1riysz9a.js'
   ]
   const request = async (urls: string[]) => {
     for (let i = 0; i < urls.length; i++) {

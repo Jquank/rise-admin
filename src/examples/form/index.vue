@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
-  // import { RForm, type ConfigItemType } from '@jquank/rise-ui'
-  import { RForm, type ConfigItemType } from '@/lib/components/form'
+  import { RForm, type ConfigItemType } from '@jquank/rise-ui'
+  // import { RForm, type ConfigItemType } from '@/lib/components/form'
   const formData = ref<object>({})
   const formRef = ref()
   const sexDisabled = ref(false)

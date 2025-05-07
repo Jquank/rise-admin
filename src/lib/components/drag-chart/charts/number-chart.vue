@@ -15,8 +15,9 @@
 </template>
 
 <script setup lang="ts">
-  import ChartTitle from './ChartTitle.vue'
+  import ChartTitle from './chart-title.vue'
   import { pick } from 'lodash-es'
+  import { SvgIcon } from '../../svg-icon'
 </script>
 
 <style lang="less" scoped>
