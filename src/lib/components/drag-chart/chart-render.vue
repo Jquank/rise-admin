@@ -1,36 +1,43 @@
 <template>
-  <grid-layout
-    :layout="layout"
-    :col-num="4"
-    :row-height="props.rowHeight"
-    :isDraggable="false"
-    :isResizable="false"
-    :vertical-compact="true"
-    :use-css-transforms="true"
-    :margin="[24, 24]"
-    :static="true">
-    <grid-item
-      v-for="item in layout"
-      :key="item.i"
-      :x="item.x"
-      :y="item.y"
-      :w="item.w"
-      :h="item.h"
-      :i="item.i"
-      @resized="resized">
-      <div class="chart-wrapper" v-if="item.i && item.type && item.data">
-        <component
-          :is="getCurrentComponent(item.type)"
-          :type="item.type"
-          :resizeKey="resizeKey"
-          v-bind="item"></component>
-      </div>
-    </grid-item>
-  </grid-layout>
+  <div class="chart-render-wrapper">
+    <grid-layout
+      :layout="layout"
+      :col-num="4"
+      :row-height="props.rowHeight"
+      :isDraggable="false"
+      :isResizable="false"
+      :vertical-compact="true"
+      :use-css-transforms="true"
+      :margin="[24, 24]"
+      :static="true">
+      <grid-item
+        v-for="item in layout"
+        :key="item.i"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        @resized="resized">
+        <div class="chart-wrapper" v-if="item.i && item.type && item.data">
+          <component
+            :is="getCurrentComponent(item.type)"
+            :type="item.type"
+            :resizeKey="resizeKey"
+            v-bind="item"></component>
+        </div>
+      </grid-item>
+    </grid-layout>
+    <div class="empty-card" v-show="showEmptyCard">
+      <slot name="empty">
+        <el-empty description="暂无数据" :image-size="200" />
+      </slot>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, watchEffect, onMounted, PropType } from 'vue'
+  import { ref, watchEffect, onMounted, PropType, computed } from 'vue'
   import NumberChart from './charts/number-chart.vue'
   import EchartComponent from './charts/echart-component.vue'
   import { ChartItemType, ChartType } from './type'
@@ -53,7 +60,7 @@
   })
 
   const layout = ref<ChartItemType[]>([])
-
+  const showEmptyCard = computed(() => layout.value.length === 0)
   watchEffect(() => {
     let d = cloneDeep(props.data)
     d.forEach((item) => {
@@ -102,6 +109,14 @@
 </script>
 
 <style lang="less" scoped>
+  .chart-render-wrapper {
+    .empty-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
   .chart-wrapper {
     height: 100%;
     padding: 15px;

@@ -17,6 +17,7 @@
     },
     "./style.css": "./dist/style.css"
   },
+  "sideEffects": false,
   "scripts": {
     "build-r": "npx rolldown -c ./rolldown.lib.config.ts",
     "build": "npx vite build -c ./vite.lib.config.ts",

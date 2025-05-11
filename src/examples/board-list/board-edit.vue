@@ -6,7 +6,7 @@
           <SvgIcon icon="arrow-left"></SvgIcon>
         </template>
         <template #content>
-          <span class="font-weight-500">看板1</span>
+          <span class="font-weight-500">{{ boardData.title }}</span>
           <SvgIcon icon="arrow-left" class="cursor-pointer ml-10"></SvgIcon>
         </template>
         <template #extra>
@@ -93,16 +93,26 @@
 
 <script setup lang="ts">
   import { ref } from 'vue'
+  import { useRoute } from 'vue-router'
   import { userApi, type UserType } from '@/_api/index'
   import { ElButton } from 'element-plus'
+  // import {
+  //   DragWrapper,
+  //   DropRender,
+  //   ChartItemType,
+  //   iconList as originIconList
+  // } from '@jquank/rise-ui'
   import {
     DragWrapper,
     DropRender,
     ChartItemType,
     iconList as originIconList
-  } from '@jquank/rise-ui'
+  } from '@/lib/components/drag-chart'
   import { numberDataMocked, barDataMocked, lineDataMocked } from './mock'
-  import { omit, cloneDeep } from 'lodash-es'
+  import { omit, cloneDeep, pick } from 'lodash-es'
+  import { BoardApi } from '@/_api2/index'
+
+  const route = useRoute()
 
   const iconList = originIconList.concat({
     icon: 'shuaxin',
@@ -135,11 +145,13 @@
 
   // #region DropArea
 
+  const boardData = ref<any>({})
   const layoutData = ref<ChartItemType[]>([])
 
-  setTimeout(() => {
-    layoutData.value = cloneDeep(mockData.cards)
-  }, 100)
+  BoardApi.getBoardById(+route.params.id).then((res: any) => {
+    boardData.value = pick(res.data, ['id', 'title', 'desc'])
+    layoutData.value = res.data.cards
+  })
 
   // 获取单个图表数据
   const getChartData = async (
@@ -154,6 +166,8 @@
   }
   const dropAdd = async (nodeData: unknown, i: string) => {
     const chartData = await getChartData(nodeData)
+    console.log(layoutData.value, '9999')
+
     const item = layoutData.value.find((v) => v.i === i)
     if (item) {
       Object.assign(item, chartData, { posi: item.posi })
@@ -169,6 +183,7 @@
     configDisabled.value = false
     currentChartData.value = item
   }
+
   // #endregion
 
   // #region 图表配置相关
@@ -201,8 +216,8 @@
     console.log(layoutData.value, '222')
   }
   // #endregion
-  const saveBoard = () => {
-    console.log(layoutData.value)
+  const saveBoard = async () => {
+    await BoardApi.putBoard({ ...boardData.value, cards: layoutData.value })
   }
 </script>
 

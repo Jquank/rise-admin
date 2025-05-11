@@ -8,9 +8,8 @@
       <slot name="left"></slot>
     </div>
     <!-- 中间拖拽区域 -->
-
     <div id="card-drag-content">
-      <el-scrollbar class="drop-area-scrollbar">
+      <el-scrollbar class="drop-area-scrollbar" @dragover.prevent>
         <grid-layout
           ref="layoutRef"
           v-model:layout="layout"
@@ -92,9 +91,6 @@
   import { ChartItemType, LayoutPosi, ChartType } from './type'
   import { SvgIcon } from '../svg-icon'
   import { useGlobalState } from './use-global-state'
-  import { cloneDeep } from 'lodash-es'
-
-  // todo, 滚动到最上和最下时，要手动控制滚动条
 
   const props = withDefaults(
     defineProps<{
@@ -138,42 +134,12 @@
   /** 是否展示空状态 */
   const showEmptyCard = computed(() => layout.value.length === 0)
 
-  /** 展开字段posi，将x、y、w、h、i置于最外层 */
-  const expandPosi = (d: ChartItemType[]) => {
-    for (let j = 0; j < d.length; j++) {
-      const item = d[j]
-      if (item.i || !item.posi) continue
-      if (item.posi && typeof item.posi === 'string') {
-        const posi = JSON.parse(item.posi)
-        Object.keys(posi).forEach((k) => {
-          item[k] = posi[k]
-        })
-      }
-    }
-    return d
-  }
-
-  /** 重新生成posi */
-  const compressPosi = (d: ChartItemType[]) => {
-    for (let j = 0; j < d.length; j++) {
-      const item = d[j]
-      const posi = {
-        x: item.x,
-        y: item.y,
-        w: item.w,
-        h: item.h,
-        i: item.i
-      }
-      item.posi = JSON.stringify(posi)
-    }
-    return d
-  }
-
   const layout = ref<ChartItemType[]>([])
+
   watch(
     () => props.modelValue,
     (newVal) => {
-      layout.value = expandPosi(newVal)
+      layout.value = newVal
     },
     { immediate: true }
   )
@@ -231,7 +197,7 @@
         defaultH.value,
         defaultW.value
       )
-      DragPos.i = String(index)
+      DragPos.i = String(index) + '-' + Date.now()
       DragPos.x = layout.value[index].x
       DragPos.y = layout.value[index].y
     }
@@ -250,7 +216,7 @@
       defaultH.value,
       defaultW.value
     )
-    layout.value = layout.value.filter((obj) => obj.i !== 'drop')
+    layout.value.splice(index, 1)
     layout.value.push({
       x: DragPos.x,
       y: DragPos.y,
@@ -258,7 +224,6 @@
       h: defaultH.value,
       i: DragPos.i
     })
-    emits('update:modelValue', compressPosi(cloneDeep(layout.value)))
     layoutRef.value.dragEvent(
       'dragend',
       DragPos.i,
@@ -338,7 +303,6 @@
     position: relative;
     .drop-area-scrollbar {
       height: 100%;
-      // background-color: var(--section-bg-color);
     }
     #card-drag-content {
       flex: 1;
@@ -350,12 +314,10 @@
         position: relative;
         height: 100%;
         padding: 15px;
-        overflow: hidden;
         background-color: var(--main-bg-color);
         border: 1px solid transparent;
         border-radius: 2px;
         box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
-        // overflow: hidden;
         &:hover {
           box-shadow:
             0px 12px 32px 4px rgba(0, 0, 0, 0.04),
@@ -378,6 +340,7 @@
           justify-content: space-between;
           position: relative;
           height: 100%;
+          overflow: hidden;
         }
       }
       .chart-wrapper-acrive {

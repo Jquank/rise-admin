@@ -6,8 +6,7 @@
       :font="font"
       :z-index="5000"
       :offset="[50, 50]"
-      class="layout-main"
-    >
+      class="layout-main">
       <nav class="layout-left">
         <LayoutNav></LayoutNav>
       </nav>
@@ -17,8 +16,7 @@
             ref="scrollBarRef"
             v-if="$route.meta.noUseGlobalScrollbar !== true"
             view-class="self-scrollbar-view"
-            wrap-class="self-scrollbar-wrap"
-          >
+            wrap-class="self-scrollbar-wrap">
             <div class="router-view-box">
               <router-view #default="{ Component }">
                 <transition name="main" appear>

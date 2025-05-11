@@ -110,7 +110,6 @@ export const numberData = {
 }
 
 export const lineDataMocked = {
-  id: '',
   posi: '{"x":0,"y":0,"w":3,"h":3,"i":"0"}', // 卡片的位置信息，由前端给
   title: '上周搜索次数',
   value: '10010.00',
@@ -133,7 +132,6 @@ export const lineDataMocked = {
 }
 
 export const numberDataMocked = {
-  id: '', // 卡片id。默认为空
   posi: '{"x":3,"y":0,"w":1,"h":1,"i":"1"}', // 卡片的位置信息，由前端给
   title: '商品销售数量',
   value: '1200.00',
@@ -152,7 +150,6 @@ export const numberDataMocked = {
 }
 
 export const barDataMocked = {
-  id: '',
   posi: '{"x":0,"y":3,"w":2,"h":5,"i":"2"}',
   title: '商品销售数量',
   unit: '个',

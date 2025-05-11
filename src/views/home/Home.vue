@@ -1,23 +1,18 @@
 <template>
   <div class="home-container">
-    <ChartRender :data="mockData.cards" />
+    <ChartRender :data="CardData" />
   </div>
 </template>
 
 <script setup lang="ts">
+  import { shallowRef } from 'vue'
   import { ChartRender } from '@/lib/components/drag-chart'
-  import {
-    numberDataMocked,
-    barDataMocked,
-    lineDataMocked
-  } from '@/examples/board-list/mock'
+  import { BoardApi } from '@/_api2/index'
 
-  const mockData = {
-    id: '1',
-    title: '看板1',
-    desc: '看板1描述',
-    cards: [numberDataMocked, barDataMocked, lineDataMocked]
-  }
+  const CardData = shallowRef([])
+  BoardApi.getBoardById(1).then((res: any) => {
+    CardData.value = res.data.cards || []
+  })
 </script>
 
 <style lang="less" scoped>

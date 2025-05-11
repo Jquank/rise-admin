@@ -25,33 +25,14 @@
             :class="item.active ? 'active' : ''">
             <template #header>
               <div v-ellipsis-tooltip class="ellipsis">
-                {{
-                  `看板111看板111看板111看板111看板111看板111看板111
-                  看板111看板111看板111看板111看板111看板111看板111`.slice(
-                    0,
-                    Math.floor(Math.random() * 100)
-                  )
-                }}
+                {{ item.title }}
               </div>
             </template>
             <div
               v-ellipsis-tooltip.multiline
               class="multiline-ellipsis"
               style="height: 67.5px">
-              {{
-                `描述内容：Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Optio laboriosam deserunt enim?Lorem ipsum dolor sit amet
-              consectetur adipisicing elit. Optio laboriosam deserunt enim?Lorem
-              ipsum dolor sit amet consectetur adipisicing elit. Optio
-              laboriosam deserunt enim?Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Optio laboriosam deserunt enim?Lorem ipsum dolor
-              sit amet consectetur adipisicing elit. Optio laboriosam deserunt
-              enim?Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Optio laboriosam deserunt enim?`.slice(
-                  0,
-                  Math.floor(Math.random() * 500)
-                )
-              }}
+              {{ item.desc }}
             </div>
             <template #footer>
               <div style="display: flex; justify-content: space-between">
@@ -69,10 +50,10 @@
 <script setup lang="ts">
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
-  import { listApi, ListType } from '@/api/index'
   import { RGridCollapse } from '@jquank/rise-ui'
+  import { BoardApi } from '@/_api2/index'
   const router = useRouter()
-  const tableData = ref<ListType.Res_getList[]>([])
+  const tableData = ref([])
   const searchModel = reactive({
     name: '',
     creator: ''
@@ -80,13 +61,10 @@
   const showTableLoading = ref(false)
   const listSerach = () => {
     showTableLoading.value = true
-    let params = Object.assign({}, { currentPage: 1, pageSize: 8 }, searchModel)
-    return listApi
-      .getList(params, { baseURL: import.meta.env.VITE_HTTP_URL2 || '' })
+    return BoardApi.getBoard()
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data
-        tableData.value[0].active = true
       })
       .catch(() => {
         showTableLoading.value = false

@@ -43,7 +43,8 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['element-plus/es/components/**/style/css']
+    include: ['element-plus/es/components/**/style/css'],
+    exclude: ['rise-ui']
   },
   server: {
     proxy: {
@@ -55,12 +56,11 @@ export default defineConfig({
         // target: 'http://localhost:3000',
         target: 'http://112.124.23.47:3000',
         changeOrigin: true
+      },
+      '/board': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
       }
-      // '/mock': {
-      //   target: 'http://localhost:3000/api',
-      //   changeOrigin: true,
-      //   rewrite: (path) => path.replace(/^\/mock/, '')
-      // }
     }
   }
 })

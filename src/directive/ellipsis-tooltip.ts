@@ -74,7 +74,7 @@ export const ellipsisTooltip = {
     nextTick(el._debounceFn)
   },
   beforeUnmount(el) {
-    window.addEventListener('resize', el._debounceFn)
+    window.removeEventListener('resize', el._debounceFn)
     if (el._tooltipApp) {
       el._tooltipApp.unmount()
     }
