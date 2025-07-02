@@ -7,12 +7,15 @@
 <script setup lang="ts">
   import { shallowRef } from 'vue'
   import { ChartRender } from '@/lib/components/drag-chart'
-  import { BoardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api2/index'
 
   const CardData = shallowRef([])
-  BoardApi.getBoardById(1).then((res: any) => {
-    CardData.value = res.data.cards || []
-  })
+  const getBoardData = async () => {
+    const { data: res } = await boardApi.getBoard()
+    const { data } = await boardApi.getBoardById(res[0]?.id || '')
+    CardData.value = data.cards || []
+  }
+  getBoardData()
 </script>
 
 <style lang="less" scoped>

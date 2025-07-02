@@ -3,28 +3,33 @@ import { $http } from '../http'
 
 import { ResponseType, AxiosRequestConfig } from '../responseType'
 
+interface Dto_CardDto_data {}
+interface Dto_CardDto_config {}
 interface Dto_CardDto {
   id?: number
   title: string
   value: string
   type: string
-  posi: string
-  config: string
-  data: string
+  x: number
+  y: number
+  w: number
+  h: number
+  i: string
+  config: Dto_CardDto_config
+  data: Dto_CardDto_data
 }
 interface Dto_UpdateBoardDto {
   id: number
   cards?: Dto_CardDto[]
   title: string
-  desc: string
+  desc?: string
 }
 interface Dto_CreateBoardDto {
   title: string
-  desc: string
+  desc?: string
 }
 export type Body_postBoard = Dto_CreateBoardDto
 export type Body_putBoard = Dto_UpdateBoardDto
-export interface Res_getBoardById {}
 
 class Board {
   /**  */
@@ -33,7 +38,7 @@ class Board {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/board',
+      url: '/api/board',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
@@ -45,7 +50,7 @@ class Board {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/board',
+      url: '/api/board',
       method: 'put',
       ...{ data, ...axiosConfig }
     })
@@ -54,7 +59,7 @@ class Board {
   /**  */
   getBoard(axiosConfig: AxiosRequestConfig = {}): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/board',
+      url: '/api/board',
       method: 'get',
       ...{ ...axiosConfig }
     })
@@ -66,7 +71,7 @@ class Board {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/board/${id}`,
+      url: `/api/board/${id}`,
       method: 'delete',
       ...{ ...axiosConfig }
     })
@@ -76,13 +81,13 @@ class Board {
   getBoardById(
     id: number,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getBoardById>> {
+  ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/board/${id}`,
+      url: `/api/board/${id}`,
       method: 'get',
       ...{ ...axiosConfig }
     })
   }
 }
 
-export const BoardApi = new Board()
+export const boardApi = new Board()

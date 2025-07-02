@@ -28,12 +28,20 @@
   import { useRoute, useRouter } from 'vue-router'
   // import { ChartRender } from '@jquank/rise-ui'
   import { ChartRender } from '@/lib/components/drag-chart'
-  import { BoardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api2/index'
+
+  interface BoardDetailProps {
+    title: string
+    cards: []
+  }
 
   const router = useRouter()
   const route = useRoute()
-  const detailData = ref<any>({})
-  BoardApi.getBoardById(+route.params.id).then((res) => {
+  const detailData = ref<BoardDetailProps>({
+    title: '',
+    cards: []
+  })
+  boardApi.getBoardById(+route.params.id).then((res) => {
     detailData.value = res.data
   })
   const editBoard = () => {

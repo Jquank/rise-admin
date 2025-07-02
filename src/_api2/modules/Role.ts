@@ -11,10 +11,6 @@ interface Dto_BindUserDto {
   roleId: number
   userIds: number[]
 }
-interface Dto_FindRoleDto {
-  name?: string
-  desc?: string
-}
 interface Dto_DeleteRoleDto {
   ids: number[]
 }
@@ -25,9 +21,12 @@ interface Dto_CreateRoleDto {
 export type Body_postRole = Dto_CreateRoleDto
 export type Body_deleteRole = Dto_DeleteRoleDto
 export interface Res_deleteRole {}
+interface Query_getRole {
+  name: string
+  desc: string
+}
 export type Body_putRoleById = Dto_CreateRoleDto
 export interface Res_getRoleById {}
-export type Body_postRoleQuery = Dto_FindRoleDto
 export type Body_postRoleUsers = Dto_BindUserDto
 export type Body_postRolePermissions = Dto_BindPermissionDto
 
@@ -38,7 +37,7 @@ class Role {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/role',
+      url: '/api/role',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
@@ -50,9 +49,21 @@ class Role {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<Res_deleteRole>> {
     return $http.request({
-      url: '/role',
+      url: '/api/role',
       method: 'delete',
       ...{ data, ...axiosConfig }
+    })
+  }
+
+  /** 查询角色列表(不分页) */
+  getRole(
+    params: Query_getRole,
+    axiosConfig: AxiosRequestConfig = {}
+  ): Promise<ResponseType<any>> {
+    return $http.request({
+      url: '/api/role',
+      method: 'get',
+      ...{ params, ...axiosConfig }
     })
   }
 
@@ -63,7 +74,7 @@ class Role {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/role/${id}`,
+      url: `/api/role/${id}`,
       method: 'put',
       ...{ data, ...axiosConfig }
     })
@@ -73,23 +84,11 @@ class Role {
   getRoleById(
     id: number,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getRoleById>> {
-    return $http.request({
-      url: `/role/${id}`,
-      method: 'get',
-      ...{ ...axiosConfig }
-    })
-  }
-
-  /** 查询角色列表(不分页) */
-  postRoleQuery(
-    data: Body_postRoleQuery,
-    axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/role/query',
-      method: 'post',
-      ...{ data, ...axiosConfig }
+      url: `/api/role/${id}`,
+      method: 'get',
+      ...{ ...axiosConfig }
     })
   }
 
@@ -99,7 +98,7 @@ class Role {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/role/users',
+      url: '/api/role/users',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
@@ -111,11 +110,11 @@ class Role {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/role/permissions',
+      url: '/api/role/permissions',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
   }
 }
 
-export const RoleApi = new Role()
+export const roleApi = new Role()

@@ -3,17 +3,27 @@ import { AppApi } from './modules/App.ts'
 export type { AppType }
 export { AppApi }
 
-import type * as UserType from './modules/User.ts'
-import { UserApi } from './modules/User.ts'
+import type * as UserType from './modules/user.ts'
+import { userApi } from './modules/user.ts'
 export type { UserType }
-export { UserApi }
+export { userApi }
 
-import type * as RoleType from './modules/Role.ts'
-import { RoleApi } from './modules/Role.ts'
+import type * as RoleType from './modules/role.ts'
+import { roleApi } from './modules/role.ts'
 export type { RoleType }
-export { RoleApi }
+export { roleApi }
 
-import type * as BoardType from './modules/Board.ts'
-import { BoardApi } from './modules/Board.ts'
+import type * as BoardType from './modules/board.ts'
+import { boardApi } from './modules/board.ts'
 export type { BoardType }
-export { BoardApi }
+export { boardApi }
+
+import type * as AuthType from './modules/auth.ts'
+import { authApi } from './modules/auth.ts'
+export type { AuthType }
+export { authApi }
+
+import type * as HouseType from './modules/house.ts'
+import { houseApi } from './modules/house.ts'
+export type { HouseType }
+export { houseApi }

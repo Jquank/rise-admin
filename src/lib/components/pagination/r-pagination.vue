@@ -2,7 +2,7 @@
   <el-pagination
     v-model:current-page="page.currentPage"
     v-model:page-size="page.pageSize"
-    :page-sizes="[10, 20, 30, 50]"
+    :page-sizes="[10, 20, 50, 100]"
     background
     :layout="layout"
     :total="total"
@@ -44,24 +44,23 @@
     layout.value = (attrs.layout || layoutPreset) as string
   })
 
-  const sizeChange = () => {
-    props.callback(page)
-  }
-  const currentChange = () => {
-    props.callback(page)
+  const queryList = async () => {
+    props.callback(page).then((res: number) => {
+      total.value = res
+    })
   }
 
-  const initCallback = () => {
-    props.callback(page).then((totalNum: number | void) => {
-      total.value = totalNum || 0
-    })
+  const sizeChange = () => {
+    queryList()
+  }
+  const currentChange = () => {
+    queryList()
   }
 
   watch(
     () => props.callback,
     () => {
-      console.log('props.callback')
-      initCallback()
+      queryList()
     },
     { immediate: true }
   )

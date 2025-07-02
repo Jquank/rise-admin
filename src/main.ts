@@ -16,8 +16,8 @@ import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/notification/style/css'
 
 // iconfont
-// import './assets/icons/iconfont.js'
-import '//at.alicdn.com/t/c/font_4380660_y9o1riysz9a.js'
+import './assets/icons/iconfont.js'
+// import '//at.alicdn.com/t/c/font_4380660_y9o1riysz9a.js'
 
 // css
 import './assets/css/index.less'

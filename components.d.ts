@@ -58,6 +58,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     ElWatermark: typeof import('element-plus/es')['ElWatermark']
     EmptyRouterView: typeof import('./src/components/EmptyRouterView.vue')['default']
     FileDownload: typeof import('./src/components/download/FileDownload.vue')['default']

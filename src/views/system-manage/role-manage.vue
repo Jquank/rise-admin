@@ -38,10 +38,9 @@
         <el-checkbox-group v-model="checkedBtns" @change="checkedBtnsChange">
           <el-checkbox
             v-for="item in btnTypes"
-            :key="item.key"
-            :label="item.value"
-            >{{ item.key }}</el-checkbox
-          >
+            :key="item.value"
+            :label="item.key"
+            :value="item.value"></el-checkbox>
         </el-checkbox-group>
       </div>
       <h4 class="pl-24 pb-10 pt-10">菜单权限</h4>
@@ -119,7 +118,7 @@
   import { deleteNodeFromTreeList, getCheckedKeysByProp } from '@/utils/common'
   import { ElMessage, type ElTree, type CheckboxValueType } from 'element-plus'
   import { cloneDeep } from 'lodash-es'
-  import { roleApi, type RoleType, userApi, type UserType } from '@/_api/index'
+  import { roleApi, userApi } from '@/_api2/index'
   import type { FormInstance, FormRules } from 'element-plus'
 
   // #region 获取菜单树
@@ -133,10 +132,10 @@
 
   // #region 查询角色列表
   const loading = ref(true)
-  const tableData = ref<RoleType.Res_getRole[]>([])
+  const tableData = ref([])
   const getRoleList = async () => {
     try {
-      const { data } = await roleApi.getRole()
+      const { data } = await roleApi.getRole({ name: '', desc: '' })
       tableData.value = data
     } finally {
       loading.value = false
@@ -192,28 +191,30 @@
     disabled: 'disabled'
   }
   const btnTypes = [
-    { value: 'ADD', key: '新增' },
-    { value: 'UPDATE', key: '修改' },
-    { value: 'DELETE', key: '删除' },
-    { value: 'VIEW', key: '查看' },
-    { value: 'DOWNLOAD', key: '下载' },
-    { value: 'IMPORT', key: '导入' },
-    { value: 'EXPORT', key: '导出' }
+    { value: 'btn:ADD', key: '新增' },
+    { value: 'btn:UPDATE', key: '修改' },
+    { value: 'btn:DELETE', key: '删除' },
+    { value: 'btn:VIEW', key: '查看' },
+    { value: 'btn:DOWNLOAD', key: '下载' },
+    { value: 'btn:IMPORT', key: '导入' },
+    { value: 'btn:EXPORT', key: '导出' }
   ]
   const checkedBtns = ref<string[]>([])
   const checkAll = ref(false)
   const isIndeterminate = ref(true)
-  let currentRole: RoleType.Res_getRoleById
-  const editRole = async (row: RoleType.Res_getRole) => {
-    currentRole = row
+  let currentRole
+  const editRole = async (row) => {
     const { data } = await roleApi.getRoleById(row.id)
+    currentRole = data
+    const btnAuth = (data.permissions || []).filter((v) => v.includes('btn:'))
+    const menuAuth = (data.permissions || []).filter((v) => v.includes('menu:'))
     // 默认选中按钮
-    checkedBtns.value = data.btnAuth
-    if (data.btnAuth.length === btnTypes.length) {
+    checkedBtns.value = btnAuth
+    if (btnAuth.length === btnTypes.length) {
       checkAll.value = true
       isIndeterminate.value = false
     }
-    if (data.btnAuth.length === 0) {
+    if (btnAuth.length === 0) {
       isIndeterminate.value = false
     }
     // 默认选中菜单（满足条件的叶子节点的name）
@@ -222,7 +223,7 @@
       'name',
       (item) =>
         (!item.children || !item.children.length) &&
-        data.menuAuth.includes(item.name)
+        menuAuth.includes('menu:' + item.name)
     )
     dialogVisible.value = true
     treeKey.value = new Date() + ''
@@ -238,12 +239,14 @@
   }
   const confirm = async () => {
     let keys = treeRef.value!.getCheckedKeys(true) as string[]
-    const { code, message } = await roleApi.putRoleByIdAuth(currentRole.id, {
-      menuAuth: keys,
-      btnAuth: checkedBtns.value
+    const { code } = await roleApi.postRolePermissions({
+      roleId: currentRole.id,
+      permissions: keys
+        .map((v) => `menu:${v}`)
+        .concat(checkedBtns.value.map((v) => `btn:${v}`))
     })
     if (code === 0) {
-      ElMessage.success(message)
+      ElMessage.success('修改成功')
       dialogVisible.value = false
     }
   }
@@ -253,26 +256,26 @@
   const userTreeRef = ref()
   const toUserDialogVisible = ref(false)
   const assignProps = {
-    label: 'name',
+    label: 'username',
     children: 'children',
     disabled: 'disabled'
   }
   const userDefaultCheckedKeys = ref<number[]>([])
-  const userTree = ref<UserType.Res_getUserDepartmentTree[]>([])
+  const userTree = ref([])
   // 点击分配用户
   const assignUser = async () => {
     toUserDialogVisible.value = true
-    const { data: d } = await roleApi.getRoleByIdUsers(currentRole.id)
-    userDefaultCheckedKeys.value = d.map(
-      (item: UserType.Res_getUser) => item.id
-    )
-    const { data } = await userApi.getUserDepartmentTree()
+    const { data } = await userApi.getUserList()
+    userDefaultCheckedKeys.value = currentRole.users.map((item) => item.id)
     userTree.value = data
   }
   // 点击确认
   const assignUserConfirm = async () => {
     let keys = userTreeRef.value!.getCheckedKeys(true) as number[]
-    const { code } = await roleApi.postRoleByIdBindUser(currentRole.id, keys)
+    const { code } = await roleApi.postRoleUsers({
+      roleId: currentRole.id,
+      userIds: keys
+    })
     if (code === 0) {
       ElMessage.success('用户绑定成功')
       toUserDialogVisible.value = false

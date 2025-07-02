@@ -10,7 +10,11 @@
           <SvgIcon icon="arrow-left" class="cursor-pointer ml-10"></SvgIcon>
         </template>
         <template #extra>
-          <el-button @click="saveBoard" type="primary" class="mr-10"
+          <el-button
+            @click="saveBoard"
+            :loading="saveLoading"
+            type="primary"
+            class="mr-10"
             >保存</el-button
           >
         </template>
@@ -94,7 +98,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import { useRoute } from 'vue-router'
-  import { userApi, type UserType } from '@/_api/index'
   import { ElButton } from 'element-plus'
   // import {
   //   DragWrapper,
@@ -110,7 +113,8 @@
   } from '@/lib/components/drag-chart'
   import { numberDataMocked, barDataMocked, lineDataMocked } from './mock'
   import { omit, cloneDeep, pick } from 'lodash-es'
-  import { BoardApi } from '@/_api2/index'
+  import { userApi, boardApi, type BoardType } from '@/_api2/index'
+  import { ElMessage } from 'element-plus'
 
   const route = useRoute()
 
@@ -121,59 +125,58 @@
   })
 
   type IconItemType = (typeof iconList)[0]
-  const mockData = {
-    id: '1',
-    title: '看板1',
-    desc: '看板1描述',
-    cards: [numberDataMocked, barDataMocked, lineDataMocked]
+
+  const mockedDataMap = {
+    '1': barDataMocked,
+    '50': numberDataMocked,
+    '3': lineDataMocked
   }
 
   const activeName = ref('optional')
   const configDisabled = ref(true)
   // #region 指标树
-  const treeData = ref<UserType.Res_getUserDepartmentTree[]>([])
+  const treeData = ref([])
   const treeRef = ref()
   const defaultProps = {
-    label: 'name'
+    label: 'username'
   }
   const getTreeData = async () => {
-    const { data } = await userApi.getUserDepartmentTree()
-    treeData.value = data
+    const { data } = await userApi.getUserList()
+    treeData.value = [{ username: '111', id: '111', children: data }]
   }
   getTreeData()
   // #endregion
 
   // #region DropArea
 
-  const boardData = ref<any>({})
+  const boardData = ref<BoardType.Body_putBoard>()
   const layoutData = ref<ChartItemType[]>([])
 
-  BoardApi.getBoardById(+route.params.id).then((res: any) => {
+  boardApi.getBoardById(+route.params.id).then((res) => {
     boardData.value = pick(res.data, ['id', 'title', 'desc'])
     layoutData.value = res.data.cards
   })
 
-  // 获取单个图表数据
-  const getChartData = async (
-    params: unknown
-  ): Promise<typeof numberDataMocked> => {
+  /** 获取单个图表数据 */
+  const getChartData = async (params): Promise<ChartItemType> => {
     console.log(params)
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(cloneDeep(numberDataMocked))
+        resolve(cloneDeep(mockedDataMap[params.type]))
       }, 200)
     })
   }
-  const dropAdd = async (nodeData: unknown, i: string) => {
-    const chartData = await getChartData(nodeData)
-    console.log(layoutData.value, '9999')
 
+  /** 当前选中图表数据 */
+  const currentChartData = ref<ChartItemType>({})
+
+  const dropAdd = async (nodeData: unknown, i: string) => {
+    const chartData = await getChartData({ type: '50' })
     const item = layoutData.value.find((v) => v.i === i)
     if (item) {
-      Object.assign(item, chartData, { posi: item.posi })
+      Object.assign(item, chartData)
     }
     console.log(item, i, 'item')
-
     currentChartData.value = item
     configDisabled.value = false
   }
@@ -187,38 +190,37 @@
   // #endregion
 
   // #region 图表配置相关
-  /** 当前选中图表数据 */
-  const currentChartData = ref<ChartItemType>({})
   /** 图表类型切换 */
   const iconTypeClick = async (item: IconItemType) => {
     if (configDisabled.value || currentChartData.value.type === item.type)
       return
     // 模拟类型切换查询数据
-    await getChartData({
-      ...currentChartData.value,
-      type: item.type
-    })
-    const mockData = omit(cloneDeep(numberDataMocked), ['id', 'posi'])
+    const d = await getChartData({ type: item.type })
     currentChartData.value = {
       ...currentChartData.value,
-      ...mockData,
-      config: currentChartData.value.config
+      ...omit(d, ['i', 'x', 'y', 'w', 'h', 'posi'])
     }
     layoutData.value = layoutData.value.map((v) => {
       if (v.i === currentChartData.value.i) {
-        v = {
-          ...v,
-          ...mockData
-        }
+        v = currentChartData.value
       }
       return v
     })
-    console.log(layoutData.value, '222')
+  }
+  const saveLoading = ref(false)
+  const saveBoard = async () => {
+    try {
+      saveLoading.value = true
+      await boardApi.putBoard({
+        ...boardData.value,
+        cards: layoutData.value as BoardType.Body_putBoard['cards']
+      })
+      ElMessage.success('保存成功')
+    } finally {
+      saveLoading.value = false
+    }
   }
   // #endregion
-  const saveBoard = async () => {
-    await BoardApi.putBoard({ ...boardData.value, cards: layoutData.value })
-  }
 </script>
 
 <style lang="less" scoped>

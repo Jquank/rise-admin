@@ -105,11 +105,22 @@ each(@line-clamp, {
   background-color: var(--main-bg-color);
   .el-table {
     flex: 1;
-    // .el-table__inner-wrapper {
-    //   &::before {
-    //     width: 0;
-    //     height: 0;
-    //   }
-    // }
+  }
+}
+
+// el-form-item label超出显示省略号
+.ellipsis-from-label {
+  .el-form-item__label {
+    display: inline-block !important;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .el-form-item.el-form-item--label-right {
+    text-align: right;
+  }
+  .el-form-item.el-form-item--label-left {
+    text-align: left;
   }
 }

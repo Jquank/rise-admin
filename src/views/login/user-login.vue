@@ -8,7 +8,11 @@
           <el-option label="admin" value="admin" type="info"></el-option>
           <el-option label="user" value="user" type="info"></el-option>
         </el-select>
-        <el-input v-model="password" class="password"></el-input>
+        <el-input
+          v-model="password"
+          class="password"
+          type="password"
+          placeholder="请输入密码"></el-input>
       </div>
       <p class="error-message ellipsis">{{ errorMessage }}</p>
       <el-button @click="login" type="primary" class="login-btn"
@@ -23,25 +27,22 @@
   import { useRouter } from 'vue-router'
   import { useCommonStore } from '@/store/common.ts'
   import $http from '@/utils/http'
-  import { userApi } from '@/_api/index'
+  import { authApi } from '@/_api2/index'
 
   const commonStore = useCommonStore()
   const router = useRouter()
   const username = ref('admin')
-  const password = ref('')
+  const password = ref('123456')
   let errorMessage = ref('')
   const login = async () => {
     const params = {
       username: username.value,
       password: password.value
     }
-    let { code, data, message } = await userApi.postUser(params)
-    if (code < 0) {
-      errorMessage.value = message
-      return
-    }
-    $http.defaults.headers.common['Authorization'] = data
-    sessionStorage.setItem('token', data)
+    const { data } = await authApi.postAuthLogin(params)
+    const token = data.token_type + ' ' + data.access_token
+    $http.defaults.headers.common['Authorization'] = token
+    localStorage.setItem('token', token)
     commonStore.initRouterFlag = false
     router.replace({ path: '/home' })
   }

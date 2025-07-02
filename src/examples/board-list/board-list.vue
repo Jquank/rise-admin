@@ -51,7 +51,7 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { RGridCollapse } from '@jquank/rise-ui'
-  import { BoardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api2/index'
   const router = useRouter()
   const tableData = ref([])
   const searchModel = reactive({
@@ -61,7 +61,8 @@
   const showTableLoading = ref(false)
   const listSerach = () => {
     showTableLoading.value = true
-    return BoardApi.getBoard()
+    return boardApi
+      .getBoard()
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data

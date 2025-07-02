@@ -6,7 +6,7 @@ import { ResponseType, AxiosRequestConfig } from '../responseType'
 class App {
   /**  */
   get(axiosConfig: AxiosRequestConfig = {}): Promise<ResponseType<string>> {
-    return $http.request({ url: '/', method: 'get', ...{ ...axiosConfig } })
+    return $http.request({ url: '/api', method: 'get', ...{ ...axiosConfig } })
   }
 }
 

@@ -27,7 +27,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'login',
     meta: { title: '登录' },
-    component: () => import('@/views/login/UserLogin.vue')
+    component: () => import('@/views/login/user-login.vue')
   },
   {
     path: '/',
@@ -40,7 +40,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'home',
         name: 'home',
         meta: { title: '首页', icon: 'home1', deep: 1 },
-        component: () => import('@/views/home/Home.vue')
+        component: () => import('@/views/home/home-page.vue')
       }
     ]
   }
@@ -65,7 +65,7 @@ router.beforeEach(async (to) => {
     splicePath(layoutRoutes.children)
   }
 
-  const token = sessionStorage.getItem('token') || ''
+  const token = localStorage.getItem('token') || ''
   if (!token) {
     if (to.name === 'login') {
       return
@@ -74,53 +74,48 @@ router.beforeEach(async (to) => {
     }
   } else {
     if (to.name === 'login') {
-      return '/home'
-    } else {
-      // pinia须在router实例化后使用
-      const commonStore = useCommonStore()
-      if (commonStore.initRouterFlag) return
-      const layoutRoutes = routes.find((r) => r.name === 'layout')!
-
-      // 清空menuData和所有router
-      commonStore.menuData = []
-      layoutRoutes.children?.forEach((r) => {
-        if (r.name !== 'home' && router.hasRoute(r.name!))
-          router.removeRoute(r.name!)
-      })
-
-      // 获取用户信息
-      await commonStore.getUserInfoAndAuth()
-      const userInfo = commonStore.userInfo
-
-      // 没权限，默认给首页权限
-      if (!userInfo.mergedMenuAuth || !userInfo.mergedMenuAuth!.length) {
-        userInfo.mergedMenuAuth = ['home']
-      }
-      // 匹配出权限路由（包含详情）
-      const resMap = findPathTreeByValue(
-        layoutRoutes.children!,
-        'name',
-        userInfo.mergedMenuAuth
-      )
-      // 添加权限路由
-      resMap.forEach((r) => {
-        if (!router.hasRoute(r.name!)) router.addRoute('layout', r)
-      })
-      // 添加完后，删除详情节点
-      deleteNodeFromTreeList(resMap, false, 'meta.show')
-      commonStore.menuData = resMap
-
-      // 添加404
-      router.addRoute('layout', {
-        path: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: () => import('@/views/other/NotFound.vue'),
-        meta: { title: '404' }
-      })
-      commonStore.initRouterFlag = true
-      // await router.replace(router.currentRoute.value.fullPath)
-      return to.fullPath
+      return
     }
+    // pinia须在router实例化后使用
+    const commonStore = useCommonStore()
+    if (commonStore.initRouterFlag) return
+    const layoutRoutes = routes.find((r) => r.name === 'layout')!
+
+    // 清空menuData和所有router
+    commonStore.menuData = []
+    layoutRoutes.children?.forEach((r) => {
+      if (r.name !== 'home' && router.hasRoute(r.name!))
+        router.removeRoute(r.name!)
+    })
+
+    // 获取用户信息
+    await commonStore.getUserInfoAndAuth()
+    const userInfo = commonStore.userInfo
+
+    // 匹配出权限路由（包含详情）
+    const resMap = findPathTreeByValue(
+      layoutRoutes.children!,
+      'name',
+      userInfo.mergedMenuAuth.map((v) => v.split(':')[1])
+    )
+    // 添加权限路由
+    resMap.forEach((r) => {
+      if (!router.hasRoute(r.name!)) router.addRoute('layout', r)
+    })
+    // 添加完后，删除详情节点
+    deleteNodeFromTreeList(resMap, false, 'meta.show')
+    commonStore.menuData = resMap
+
+    // 添加404
+    router.addRoute('layout', {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/other/NotFound.vue'),
+      meta: { title: '404' }
+    })
+    commonStore.initRouterFlag = true
+    // await router.replace(router.currentRoute.value.fullPath)
+    return to.fullPath
   }
 })
 

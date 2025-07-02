@@ -7,9 +7,16 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'role',
-        name: 'role',
+        name: 'role-manage',
         meta: { title: '角色管理', deep: 2 },
-        component: () => import('@/views/systemManage/RoleManage.vue')
+        component: () => import('@/views/system-manage/role-manage.vue')
+      },
+      {
+        path: 'enum',
+        name: 'enum-manage',
+        meta: { title: '枚举管理', deep: 2, noUseGlobalScrollbar: true },
+
+        component: () => import('@/views/system-manage/enum-manage.vue')
       }
     ]
   }

@@ -4,27 +4,25 @@ import { $http } from '../http'
 import { ResponseType, AxiosRequestConfig } from '../responseType'
 
 interface Dto_CreateUserDto {
-  email: string
-  name: string
-  age: number
+  username: string
+  password: string
 }
-export type Body_postUser = Dto_CreateUserDto
+export type Body_postUserRegister = Dto_CreateUserDto
 interface Query_getUserByRoleNames {
   roleNames: string
 }
 interface Query_getUserByRoleIds {
   roleIds: string
 }
-export interface Res_getUserById {}
 
 class User {
   /**  */
-  postUser(
-    data: Body_postUser,
+  postUserRegister(
+    data: Body_postUserRegister,
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/user',
+      url: '/api/user/register',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
@@ -32,7 +30,22 @@ class User {
 
   /**  */
   getUser(axiosConfig: AxiosRequestConfig = {}): Promise<ResponseType<any>> {
-    return $http.request({ url: '/user', method: 'get', ...{ ...axiosConfig } })
+    return $http.request({
+      url: '/api/user',
+      method: 'get',
+      ...{ ...axiosConfig }
+    })
+  }
+
+  /**  */
+  getUserList(
+    axiosConfig: AxiosRequestConfig = {}
+  ): Promise<ResponseType<any>> {
+    return $http.request({
+      url: '/api/user/list',
+      method: 'get',
+      ...{ ...axiosConfig }
+    })
   }
 
   /**  */
@@ -41,7 +54,7 @@ class User {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/user/byRoleNames',
+      url: '/api/user/byRoleNames',
       method: 'get',
       ...{ params, ...axiosConfig }
     })
@@ -53,7 +66,7 @@ class User {
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/user/byRoleIds',
+      url: '/api/user/byRoleIds',
       method: 'get',
       ...{ params, ...axiosConfig }
     })
@@ -63,13 +76,13 @@ class User {
   getUserById(
     id: number,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getUserById>> {
+  ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/user/${id}`,
+      url: `/api/user/${id}`,
       method: 'get',
       ...{ ...axiosConfig }
     })
   }
 }
 
-export const UserApi = new User()
+export const userApi = new User()

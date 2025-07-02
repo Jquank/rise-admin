@@ -3,88 +3,30 @@
     <div
       class="standrad-list-box"
       :style="{ height: $route.name === 'complex-table' ? '100%' : '0' }">
-      <GridCollapse
-        class="grid-collapse-box"
-        :loading="showTableLoading"
-        @search="handleSearch">
-        <el-form label-width="auto" :model="searchModel">
-          <el-form-item prop="value1" label="分组1分组1">
-            <el-input v-model="searchModel.value1" />
-          </el-form-item>
-          <el-form-item prop="value2" label="分组2">
-            <el-input v-model="searchModel.value2" />
-          </el-form-item>
-          <el-form-item prop="value3" label="分组3">
-            <el-input v-model="searchModel.value3" />
-          </el-form-item>
-          <el-form-item prop="value4" label="分组4">
-            <el-input v-model="searchModel.value4" />
-          </el-form-item>
-          <el-form-item prop="value5" label="分组5">
-            <el-input v-model="searchModel.value5" />
-          </el-form-item>
-          <el-form-item prop="value6" label="分组6">
-            <el-input v-model="searchModel.value6" />
-          </el-form-item>
-        </el-form>
-      </GridCollapse>
+      <RForm
+        @search="handleSearch"
+        isResponseGrid
+        showLastCol
+        buttonInRow
+        defaultCollapse
+        :config="formConfig"
+        v-model="searchModel">
+        <template #left-buttons>
+          <el-button type="primary">导入</el-button>
+          <el-button>导出</el-button>
+        </template>
+      </RForm>
       <div class="auto-height-table-box" v-loading="showTableLoading">
-        <el-table :data="tableData" height="100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            width="60"
-            align="center"
-            fixed="left" />
-          <el-table-column prop="id" label="ID" min-width="80" align="center" />
-          <el-table-column
-            prop="name"
-            label="名称"
-            min-width="120"
-            align="center" />
-          <el-table-column
-            prop="state"
-            label="状态"
-            min-width="80"
-            align="center">
-            <template #default="scope">
-              <span>{{ scope.row.state === true ? '在线' : '忙碌' }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="time"
-            label="创建时间"
-            width="170"
-            align="center" />
-          <el-table-column
-            prop="note"
-            label="备注"
-            min-width="150"
-            align="center" />
-          <el-table-column
-            label="操作"
-            width="120"
-            align="center"
-            fixed="right">
-            <template #default="scope">
-              <el-dropdown
-                @click="view(scope.row)"
-                size="small"
-                trigger="hover"
-                split-button
-                type="primary">
-                查看
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item>编辑</el-dropdown-item>
-                    <el-dropdown-item>删除</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-          </el-table-column>
-        </el-table>
-        <RPagination :callback="listSerach" />
+        <r-table
+          ref="tableRef"
+          height="100%"
+          :columns="tableColumns"
+          :data="tableData"
+          :searchMethod="listSerach"
+          :loading="showTableLoading"
+          show-overflow-tooltip
+          border>
+        </r-table>
       </div>
     </div>
     <router-view></router-view>
@@ -93,14 +35,11 @@
 
 <script setup lang="ts">
   import { ref, reactive } from 'vue'
-  import { useRouter } from 'vue-router'
-  import GridCollapse from '@/components/GridCollapse.vue'
-  import { listApi, ListType } from '@/api/index'
-  import { RPagination } from '@jquank/rise-ui'
-
-  const router = useRouter()
-  const tableData = ref<ListType.Res_getList[]>([])
-  let pageParams: Record<string, any> = {}
+  import { houseApi } from '@/_api2/index'
+  // import { RPagination, RGridCollapse } from '@jquank/rise-ui'
+  import { RTable, RForm } from '@/lib/index'
+  const tableData = ref([])
+  let pageParams
   const searchModel = reactive({
     value1: '',
     value2: '',
@@ -111,17 +50,69 @@
     value7: ''
   })
 
+  const formConfig = [
+    {
+      prop: 'value1',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    },
+    {
+      prop: 'value2',
+      label: '名称2',
+      type: 'input'
+    },
+    {
+      prop: 'value3',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    },
+    {
+      prop: 'value4',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    },
+    {
+      prop: 'value5',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    },
+    {
+      prop: 'value6',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    },
+    {
+      prop: 'value7',
+      label: '名称名称名称名称名称1111111111222222222222',
+      type: 'input'
+    }
+  ]
+
+  const tableColumns = [
+    {
+      prop: 'username',
+      label: '姓名'
+    },
+    {
+      prop: 'tel',
+      label: '电话'
+    },
+    {
+      prop: 'createdAt',
+      label: '创建时间'
+    }
+  ]
+
   const showTableLoading = ref(false)
   const listSerach = (page) => {
-    if (page) pageParams = page
     showTableLoading.value = true
-    let params = Object.assign({}, pageParams, searchModel)
-    return listApi
-      .getList(params, { baseURL: import.meta.env.VITE_HTTP_URL2 || '' })
+    pageParams = Object.assign({}, page)
+    return houseApi
+      .postHouseTenants(pageParams)
       .then((res) => {
         showTableLoading.value = false
-        tableData.value = res.data
-        return 100
+        tableData.value = res.data.list
+        return res.data.total
       })
       .catch(() => {
         showTableLoading.value = false
@@ -131,13 +122,13 @@
     pageParams.currentPage = 1
     listSerach(pageParams)
   }
-  const view = (row: { id: number }) => {
-    console.log(router.getRoutes())
-    router.push({
-      name: 'complex-table-detail',
-      params: { id: row.id }
-    })
-  }
+  // const view = (row: { id: number }) => {
+  //   console.log(router.getRoutes())
+  //   router.push({
+  //     name: 'complex-table-detail',
+  //     params: { id: row.id }
+  //   })
+  // }
 </script>
 
 <style lang="less" scoped>
@@ -152,7 +143,7 @@
       .grid-collapse-box {
         padding: 18px 12px 0;
         background-color: var(--main-bg-color);
-        margin-bottom: 18px;
+        // border-bottom: 1px solid var(--el-border-color-light);
       }
     }
   }

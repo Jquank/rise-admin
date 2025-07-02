@@ -2,7 +2,7 @@
 import _a from './components/_a/_a.vue'
 
 import { RForm } from './components/form'
-export type { ConfigItemType } from './components/form/types'
+export type { FormConfigItemType } from './components/form/types'
 
 import { RPagination } from './components/pagination'
 export type { SearchMethod } from './components/pagination/types'

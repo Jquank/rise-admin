@@ -53,8 +53,8 @@ export default defineConfig({
         changeOrigin: true
       },
       '/api': {
-        // target: 'http://localhost:3000',
-        target: 'http://112.124.23.47:3000',
+        target: 'http://localhost:3000',
+        // target: 'http://112.124.23.47:3000',
         changeOrigin: true
       },
       '/board': {

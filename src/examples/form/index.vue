@@ -1,16 +1,27 @@
 <template>
   <div>
-    <r-form ref="formRef" :config="formConfig" v-model="formData"></r-form>
+    <RForm ref="formRef" :config="formConfig" v-model="formData"></RForm>
     {{ formData }}
+    <el-button @click="aaa">1111111</el-button>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue'
-  import { RForm, type ConfigItemType } from '@jquank/rise-ui'
-  // import { RForm, type ConfigItemType } from '@/lib/components/form'
-  const formData = ref<object>({})
-  const formRef = ref()
+  // import { RForm, type FormConfigItemType } from '@jquank/rise-ui'
+  import { RForm, type FormConfigItemType } from '@/lib/components/form'
+  const aaa = () => {
+    formRef.value?.formRef
+      ?.validate()
+      .then(() => {
+        console.log('校验成功')
+      })
+      .catch((err) => {
+        console.log('校验失败', err)
+      })
+  }
+  const formData = ref({})
+  const formRef = ref(null)
   const sexDisabled = ref(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkDemo = (_: any, value: any, callback: any) => {
@@ -20,11 +31,29 @@
       callback()
     }
   }
-  const formConfig = computed<ConfigItemType[]>(() => {
+  const formConfig = computed<FormConfigItemType[]>(() => {
     return [
       {
+        prop: 'name1',
+        label: '名称1',
+        customType: '111',
+        required: true
+      },
+      {
+        prop: 'name2',
+        label: '名称2',
+        type: 'input',
+        required: true
+      },
+      {
+        prop: 'name3',
+        label: '名称3',
+        type: 'input',
+        required: true
+      },
+      {
         prop: 'name',
-        label: '名称111111111122222222222222222222222222222',
+        label: '名称1111111111111111111111111',
         type: 'input',
         required: true,
         // itemConfig: {
@@ -80,21 +109,22 @@
         }
       },
       {
+        prop: 'remark',
+        label: '建议',
+        type: 'editor',
+        required: true,
+        colNumber: 1,
+        compConfig: {}
+      },
+      {
         prop: 'isStrat',
-        label: '是否开启',
+        label: '是否开启111111111111111111111111',
         type: 'radio',
         compConfig: {
           textField: 'label1',
           valueField: 'value1',
           customOptions: radioOptions.value
         }
-      },
-      {
-        prop: 'remark',
-        label: '建议',
-        type: 'editor',
-        colNum: 1,
-        compConfig: {}
       }
     ]
   })

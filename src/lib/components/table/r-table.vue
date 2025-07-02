@@ -25,11 +25,14 @@
             v-bind="{
               width: getColumnWidth(width, index, column),
               ...column
-            }">
+            }"
+            :key="cloumnSlots.length">
             <template
-              v-for="(originSlotName, lastName) in getCloumnSlots(column.prop)"
-              #[lastName]="scope">
-              <slot :name="originSlotName" v-bind="scope"> </slot>
+              v-for="(originSlotName, lastName) in getColumnSlots(column.prop)"
+              #[lastName]="{ row, column }">
+              <slot :name="originSlotName" v-bind="{ row, column }">
+                {{ row[column.property] }}
+              </slot>
             </template>
           </el-table-column>
         </template>
@@ -53,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, PropType, useSlots, watch } from 'vue'
+  import { ref, PropType, useSlots, watch, watchEffect } from 'vue'
   import { RPagination, type SearchMethod } from '../pagination/index'
   interface Column {
     prop: string
@@ -96,8 +99,14 @@
     heightFillUp: {
       type: Boolean,
       default: true
+    },
+    /** 异步动态插槽，useSlots非响应式，这里需要传入异步获取的插槽名 */
+    asyncSlotsName: {
+      type: Array as PropType<string[]>,
+      default: () => []
     }
   })
+
   const tableRef = ref(null)
   const pageKey = ref(0)
   const extraParams = ref()
@@ -110,7 +119,7 @@
       console.log('extraParams', val)
 
       if (!val) return
-      // 包裹原函数，自动合并排序参数
+      // 包裹原函数，自动合并参数
       injectedSearchMethod.value = (pageParams) => {
         return props.searchMethod({
           ...pageParams, // 分页组件传入的 { currentPage, pageSize }
@@ -155,23 +164,23 @@
     }
   }
 
-  const slots = useSlots()
+  let slots = useSlots()
 
-  // 列插槽 #cloumn-xxx
-  const prefixCloumnSlots = ref([])
+  // 列插槽 #cloumn-xxx 和 # edit-xxx
+  const cloumnSlots = ref([])
   // table插槽
   const tableSlots = ref({})
 
   // 处理插槽
   const handleSlots = () => {
     for (const name in slots) {
+      const nameArr = name.split('-')
+      const len = nameArr.length
+      const lastName = nameArr[len - 1]
       if (name.startsWith('default-')) {
         // empty
       } else if (name.startsWith('column-')) {
-        const nameArr = name.split('-')
-        const len = nameArr.length
-        const lastName = nameArr[len - 1]
-        prefixCloumnSlots.value.push({
+        cloumnSlots.value.push({
           originSlotName: name,
           len,
           lastName
@@ -180,24 +189,35 @@
         tableSlots.value[name] = slots[name]
       }
     }
+    console.log(cloumnSlots.value)
   }
-  handleSlots()
+  watchEffect(() => {
+    slots = Object.assign(
+      {},
+      props.asyncSlotsName.reduce((pre, cur) => {
+        pre[cur] = () => ({})
+        return pre
+      }, {}),
+      slots
+    )
+    handleSlots()
+  })
 
   // #default-xxx, 优先级高于 #cloumn-xxx
   const isDefaultRender = (prop: string) => {
     return Object.keys(slots).some((name) => name === `default-${prop}`)
   }
   // 获取列插槽
-  const getCloumnSlots = (prop: string) => {
+  const getColumnSlots = (prop: string) => {
     if (!prop) return {}
-    const currentSlots = prefixCloumnSlots.value.filter((v) =>
-      v.originSlotName.includes(prop)
+    const currentSlots = cloumnSlots.value.filter(
+      (item) => item.lastName === prop
     )
     if (currentSlots.length === 0) return {}
+
     const obj = {}
     for (let i = 0; i < currentSlots.length; i++) {
       const item = currentSlots[i]
-      // 必须满足列插槽命名规范#column-xxx 或 #column-xxx-xxx
       if (item.len < 2 || item.len > 3) return {}
       if (item.len === 2) {
         // #column-xxx 渲染el-table-column的default插槽
@@ -216,7 +236,7 @@
     if (!props.usePagination) {
       props.searchMethod({ prop, order })
     } else {
-      extraParams.value = { prop, order }
+      Object.assign(extraParams.value, { prop, order })
     }
   }
 

@@ -32,12 +32,13 @@ export interface DataType {
 
 /** 图表的类型 */
 export interface ChartItemType extends Partial<LayoutPosi> {
-  id?: string | number
+  id?: number
   type?: string
   posi?: string | LayoutPosi
   title?: string
   data?: DataType
   config?: Record<string, any>
   isFirst?: boolean
-  [x: string]: any
+  value?: string
+  [prop: string]: any
 }
