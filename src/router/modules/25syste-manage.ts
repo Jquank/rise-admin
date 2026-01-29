@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'enum-manage',
         meta: { title: '枚举管理', deep: 2, noUseGlobalScrollbar: true },
 
-        component: () => import('@/views/system-manage/enum-manage.vue')
+        component: () => import('@/views/system-manage/enum/index.vue')
       }
     ]
   }

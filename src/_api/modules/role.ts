@@ -3,28 +3,31 @@ import { $http } from '../http'
 
 import { ResponseType, AxiosRequestConfig } from '../responseType'
 
-interface Dto_UpdateAuthDto {
-  menuAuth: string[]
-  btnAuth: string[]
+interface Dto_BindPermissionDto {
+  roleId: number
+  permissions: string[]
 }
-interface Dto_UpdateRoleDto {}
-interface Dto_Role {
-  id: number
-  name: string
-  createTime: string
-  desc: string
-  menuAuth: string[]
-  btnAuth: string[]
+interface Dto_BindUserDto {
+  roleId: number
+  userIds: number[]
+}
+interface Dto_DeleteRoleDto {
+  ids: number[]
 }
 interface Dto_CreateRoleDto {
   name: string
   desc: string
 }
 export type Body_postRole = Dto_CreateRoleDto
-export type Res_getRole = Dto_Role
-export type Res_getRoleById = Dto_Role
-export type Body_putRoleById = Dto_UpdateRoleDto
-export type Body_putRoleByIdAuth = Dto_UpdateAuthDto
+export type Body_deleteRole = Dto_DeleteRoleDto
+export interface Res_deleteRole {}
+interface Query_getRole {
+  name: string
+  desc: string
+}
+export type Body_putRoleById = Dto_CreateRoleDto
+export type Body_postRoleUsers = Dto_BindUserDto
+export type Body_postRolePermissions = Dto_BindPermissionDto
 
 class Role {
   /** 新增角色 */
@@ -39,32 +42,33 @@ class Role {
     })
   }
 
-  /** 查询所有角色 */
-  getRole(
+  /** 删除角色 */
+  deleteRole(
+    data: Body_deleteRole,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getRole[]>> {
+  ): Promise<ResponseType<Res_deleteRole>> {
     return $http.request({
       url: '/api/role',
-      method: 'get',
-      ...{ ...axiosConfig }
+      method: 'delete',
+      ...{ data, ...axiosConfig }
     })
   }
 
-  /** 查询单个角色信息 */
-  getRoleById(
-    id: number,
+  /** 查询角色列表(不分页) */
+  getRole(
+    params: Query_getRole,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getRoleById>> {
+  ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/api/role/${id}`,
+      url: '/api/role',
       method: 'get',
-      ...{ ...axiosConfig }
+      ...{ params, ...axiosConfig }
     })
   }
 
   /** 修改角色 */
   putRoleById(
-    id: string,
+    id: number,
     data: Body_putRoleById,
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
@@ -75,53 +79,39 @@ class Role {
     })
   }
 
-  /** 删除角色 */
-  deleteRoleById(
-    id: string,
+  /** 查询单个角色 */
+  getRoleById(
+    id: number,
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
       url: `/api/role/${id}`,
-      method: 'delete',
+      method: 'get',
       ...{ ...axiosConfig }
     })
   }
 
-  /** 编辑角色权限 */
-  putRoleByIdAuth(
-    id: number,
-    data: Body_putRoleByIdAuth,
+  /** 绑定用户 */
+  postRoleUsers(
+    data: Body_postRoleUsers,
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/api/role/${id}/auth`,
-      method: 'put',
-      ...{ data, ...axiosConfig }
-    })
-  }
-
-  /** 绑定用户到当前角色 */
-  postRoleByIdBindUser(
-    id: number,
-    data: number[],
-    axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<any>> {
-    return $http.request({
-      url: `/api/role/${id}/bindUser`,
+      url: '/api/role/users',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
   }
 
-  /** 查询当前角色所绑定的用户 */
-  getRoleByIdUsers(
-    id: number,
+  /** 绑定菜单权限 */
+  postRolePermissions(
+    data: Body_postRolePermissions,
     axiosConfig: AxiosRequestConfig = {}
   ): Promise<ResponseType<any>> {
     return $http.request({
-      url: `/api/role/${id}/users`,
-      method: 'get',
-      ...{ ...axiosConfig }
+      url: '/api/role/permissions',
+      method: 'post',
+      ...{ data, ...axiosConfig }
     })
   }
 }

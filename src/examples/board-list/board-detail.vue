@@ -28,7 +28,7 @@
   import { useRoute, useRouter } from 'vue-router'
   // import { ChartRender } from '@jquank/rise-ui'
   import { ChartRender } from '@/lib/components/drag-chart'
-  import { boardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api/index'
 
   interface BoardDetailProps {
     title: string

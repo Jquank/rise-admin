@@ -59,6 +59,7 @@ export default defineConfig({
       },
       '/board': {
         target: 'http://localhost:3000',
+        // target: 'http://112.124.23.47:3000',
         changeOrigin: true
       }
     }

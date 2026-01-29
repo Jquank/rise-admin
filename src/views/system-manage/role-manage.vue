@@ -118,7 +118,7 @@
   import { deleteNodeFromTreeList, getCheckedKeysByProp } from '@/utils/common'
   import { ElMessage, type ElTree, type CheckboxValueType } from 'element-plus'
   import { cloneDeep } from 'lodash-es'
-  import { roleApi, userApi } from '@/_api2/index'
+  import { roleApi, userApi } from '@/_api/index'
   import type { FormInstance, FormRules } from 'element-plus'
 
   // #region 获取菜单树

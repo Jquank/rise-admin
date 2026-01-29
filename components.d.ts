@@ -63,6 +63,7 @@ declare module 'vue' {
     EmptyRouterView: typeof import('./src/components/EmptyRouterView.vue')['default']
     FileDownload: typeof import('./src/components/download/FileDownload.vue')['default']
     GridCollapse: typeof import('./src/components/GridCollapse.vue')['default']
+    GridCollapseAuto: typeof import('./src/components/GridCollapseAuto.vue')['default']
     ListPagination: typeof import('./src/components/ListPagination.vue')['default']
     NumberChart: typeof import('./src/components/charts/NumberChart.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']

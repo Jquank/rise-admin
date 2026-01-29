@@ -1,7 +1,36 @@
 <template>
   <div class="grid-collapse-box" ref="gridCollapseRef">
-    <component :is="elFormVnode ? elFormVnode : 'div'" ref="elFormRef">
-      <el-row :gutter="10" class="slot-el-row">
+    <component :is="elFormVnode || 'div'" ref="elFormRef">
+      <div
+        v-if="isDenseMode"
+        class="slot-el-row dense-grid"
+        :style="denseStyle">
+        <div
+          v-for="(vnode, index) in vnodesArr"
+          :key="index"
+          class="grid-item"
+          v-show="!isCollapsedDense(index)">
+          <component :is="vnode"></component>
+        </div>
+        <div class="grid-item actions">
+          <el-button @click="reset" v-if="showActionBtn">重置</el-button>
+          <el-button
+            @click="search"
+            type="primary"
+            :native-type="props.submitButton ? 'submit' : 'button'"
+            v-if="showActionBtn"
+            :loading="props.loading"
+            >查询</el-button
+          >
+          <span @click="toggleCollapse" class="text">{{
+            defaultCollapse ? $t('common.expand') : $t('common.collapse')
+          }}</span>
+          <SvgIcon
+            @click="toggleCollapse"
+            :icon="defaultCollapse ? 'arrow-down' : 'arrow-up'"></SvgIcon>
+        </div>
+      </div>
+      <el-row v-else :gutter="10" class="slot-el-row">
         <el-col
           v-for="(vnode, index) in vnodesArr"
           :key="index"
@@ -12,16 +41,11 @@
           :xl="breakPoint.xl"
           ref="colRefs"
           :class="{
-            'hidden-xs-only xs':
-              defaultCollapse && index > 24 / breakPoint.xs - 2,
-            'hidden-sm-only sm':
-              defaultCollapse && index > 24 / breakPoint.sm - 2,
-            'hidden-md-only md':
-              defaultCollapse && index > 24 / breakPoint.md - 2,
-            'hidden-lg-only lg':
-              defaultCollapse && index > 24 / breakPoint.lg - 2,
-            'hidden-xl-only xl':
-              defaultCollapse && index > 24 / breakPoint.xl - 2
+            'hidden-xs-only xs': hiddenCol(index, 'xs'),
+            'hidden-sm-only sm': hiddenCol(index, 'sm'),
+            'hidden-md-only md': hiddenCol(index, 'md'),
+            'hidden-lg-only lg': hiddenCol(index, 'lg'),
+            'hidden-xl-only xl': hiddenCol(index, 'xl')
           }">
           <component :is="vnode"></component>
         </el-col>
@@ -60,7 +84,8 @@
     useSlots,
     type VNode,
     type ComponentPublicInstance,
-    watchEffect
+    watchEffect,
+    computed
   } from 'vue'
   import type { FormInstance } from 'element-plus'
 
@@ -90,6 +115,21 @@
       type: Boolean,
       default: false
     },
+    // 非 el-form 时可开启密排布局
+    denseLayout: {
+      type: Boolean,
+      default: true
+    },
+    // 密排布局下单项最小宽度，支持 number | string | 'auto'
+    denseMinWidth: {
+      type: [String, Number],
+      default: 'auto'
+    },
+    // 密排布局下的间距（等同 gutter）
+    denseGap: {
+      type: String,
+      default: '10px'
+    },
     loading: {
       type: Boolean,
       default: false
@@ -108,12 +148,28 @@
   const slots = useSlots()
   let defaultSlots = slots.default ? slots.default() : []
   let vnodesArr: VNode[] = []
-  let elFormVnode: VNode // 去掉children后的el-form的vnode
+  const elFormVnode = ref<VNode | null>(null) // 去掉children后的el-form的vnode
 
   const colRefs = ref<ComponentPublicInstance[]>([])
   const elFormRef = ref<FormInstance | null>(null)
   const gridCollapseRef = ref<HTMLElement | null>(null)
   const lastColRef = ref<ComponentPublicInstance | null>(null)
+
+  const isDenseMode = computed(() => props.denseLayout && !elFormVnode.value)
+  const resolvedDenseMin = computed(() => {
+    if (props.denseMinWidth === 'auto') {
+      // 自适应：随视口宽度在区间内变化
+      return 'clamp(200px, 24vw, 360px)'
+    }
+    if (typeof props.denseMinWidth === 'number') {
+      return `${props.denseMinWidth}px`
+    }
+    return props.denseMinWidth || '240px'
+  })
+  const denseStyle = computed(() => ({
+    '--dense-min': resolvedDenseMin.value,
+    '--dense-gap': props.denseGap
+  }))
 
   watchEffect(() => {
     if (props.cancelGrid) {
@@ -143,9 +199,12 @@
           1
         )[0] as unknown as VNode
         // 移除chilren
-        elFormVnode = { ...originElFormVnode, children: null }
+        elFormVnode.value = { ...originElFormVnode, children: null }
         // ElForm默认属性覆盖，这里不允许全局的disabled，会禁用掉查询按钮
-        elFormVnode.props = { ...elFormVnode.props, disabled: false }
+        elFormVnode.value.props = {
+          ...elFormVnode.value.props,
+          disabled: false
+        }
         if (originElFormVnode && originElFormVnode.children) {
           elFormItemVnodes = (
             originElFormVnode.children as { default: () => VNode[] }
@@ -175,11 +234,21 @@
     emits('reset')
     search()
   }
+  const hiddenCol = (index: number, key: keyof typeof breakPoint) => {
+    return defaultCollapse.value && index > 24 / breakPoint[key] - 2
+  }
+
+  const isCollapsedDense = (index: number) => {
+    // 使用 lg 断点的行容量作为折叠阈值，保持与原 el-row 体验接近
+    return hiddenCol(index, 'lg')
+  }
+
   const toggleCollapse = () => {
     if (props.animation) {
       transitionHeight(gridCollapseRef.value!, defaultCollapse.value)
     }
     defaultCollapse.value = !defaultCollapse.value
+    if (isDenseMode.value) return
     colRefs.value.forEach((r) => {
       let classList = r.$el.classList
       Object.keys(breakPoint).forEach((k) => {
@@ -255,6 +324,27 @@
       width: 100%;
       .el-col {
         margin-bottom: 18px;
+      }
+      &.dense-grid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--dense-min, 240px), 1fr)
+        );
+        grid-auto-flow: row dense;
+        gap: var(--dense-gap, 10px);
+        .grid-item {
+          min-width: 0;
+          &.actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            .text {
+              padding: 0 5px 0 10px;
+              user-select: none;
+            }
+          }
+        }
       }
     }
     :deep(.el-form-item) {

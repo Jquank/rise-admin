@@ -4,7 +4,7 @@ import { type Component } from 'vue'
 export interface FormConfigItemType {
   label: string
   prop: string
-  type?: string
+  type?: string | Component
   customType?: Component | string
   required?: boolean
   rule?: unknown[]

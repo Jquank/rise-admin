@@ -27,7 +27,7 @@
   import { useRouter } from 'vue-router'
   import { useCommonStore } from '@/store/common.ts'
   import $http from '@/utils/http'
-  import { authApi } from '@/_api2/index'
+  import { authApi } from '@/_api/index'
 
   const commonStore = useCommonStore()
   const router = useRouter()

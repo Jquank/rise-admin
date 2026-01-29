@@ -7,7 +7,7 @@
 <script setup lang="ts">
   import { shallowRef } from 'vue'
   import { ChartRender } from '@/lib/components/drag-chart'
-  import { boardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api/index'
 
   const CardData = shallowRef([])
   const getBoardData = async () => {

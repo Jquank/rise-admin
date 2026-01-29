@@ -113,7 +113,7 @@
   } from '@/lib/components/drag-chart'
   import { numberDataMocked, barDataMocked, lineDataMocked } from './mock'
   import { omit, cloneDeep, pick } from 'lodash-es'
-  import { userApi, boardApi, type BoardType } from '@/_api2/index'
+  import { userApi, boardApi, type BoardType } from '@/_api/index'
   import { ElMessage } from 'element-plus'
 
   const route = useRoute()

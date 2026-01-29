@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { userApi } from '@/_api2/index'
+import { userApi } from '@/_api/index'
 
 export const useCommonStore = defineStore('common', () => {
   // 折叠菜单标识

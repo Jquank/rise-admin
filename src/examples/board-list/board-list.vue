@@ -51,7 +51,7 @@
   import { ref, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { RGridCollapse } from '@jquank/rise-ui'
-  import { boardApi } from '@/_api2/index'
+  import { boardApi } from '@/_api/index'
   const router = useRouter()
   const tableData = ref([])
   const searchModel = reactive({

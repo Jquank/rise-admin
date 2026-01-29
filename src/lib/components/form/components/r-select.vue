@@ -3,10 +3,14 @@
     <el-option
       v-for="item in props.optionData"
       :key="item[props.valueField]"
-      :value="item"
+      :value="
+        Object.prototype.toString.call(props.modelValue) === '[object Object]'
+          ? item
+          : item.value
+      "
       :label="item[props.textField]"></el-option>
 
-    <template v-for="(_, slot) in $slots" v-slot:[slot] :key="slot">
+    <template v-for="(_, slot) in $slots" #[slot] :key="slot">
       <slot :name="slot"></slot>
     </template>
   </el-select>
@@ -19,7 +23,7 @@
 
   const props = defineProps({
     modelValue: {
-      type: Object,
+      type: [String, Number, Boolean, Object],
       default: null
     },
     optionData: {
@@ -39,7 +43,7 @@
 
   const emits = defineEmits(['update:modelValue', 'clear'])
   const val = useVModel(props, 'modelValue', emits) as WritableComputedRef<
-    Record<string, unknown> | ''
+    Record<string, unknown> | string | number | boolean
   >
 
   const handleClear = () => {

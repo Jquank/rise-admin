@@ -163,13 +163,11 @@
     isArray,
     chain,
     isPlainObject,
-    isEmpty,
     cloneDeep
   } from 'lodash-es'
   import { useVModel } from '@vueuse/core'
-  import { type FormRules } from 'element-plus'
+  import { type FormRules, type FormInstance } from 'element-plus'
   import { transitionHeight } from '../../utils'
-  // todo 栅格
   const props = defineProps({
     config: {
       type: Array as PropType<Array<FormConfigItemType>>,
@@ -240,7 +238,7 @@
   })
   const emits = defineEmits(['update:modelValue', 'focus', 'search', 'reset'])
 
-  const formRef = ref(null)
+  const formRef = ref<FormInstance>(null)
 
   const getLabel = (item) => {
     let value = formData.value[item.prop]
@@ -359,7 +357,9 @@
   // #endregion 栅格及查询重置按钮的处理-end
 
   const getFormComp = (item: FormConfigItemType) => {
-    if (item.type) return compMap[item.type]
+    if (item.type) {
+      return typeof item.type === 'string' ? compMap[item.type] : item.type
+    }
     // 处理string类型
     if (typeof item.customType === 'string') return () => item.customType
     return item.customType
@@ -397,34 +397,39 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOptions = async (item: FormConfigItemType, index: number) => {
     const code = item?.compConfig?.code
-    if (code) {
+    const customRequest = item?.compConfig?.customRequest
+    const customParams = item?.compConfig?.customParams
+
+    if (customRequest && typeof customRequest === 'function') {
+      // 自定义查询
+      const { data } = await customRequest(customParams)
+      options.value[index] = data || []
+    } else if (code) {
       // 通过code查询数据
-      options.value[index] = await getDataByCode()
+      const { data } = await getDataByCode()
+      options.value[index] = data || []
     } else {
-      // 返回customOptions
+      // 否则返回customOptions
       options.value[index] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         item?.compConfig?.customOptions || []
     }
   }
 
-  // code不存在时，自动获取customOptions
+  // 获取初始数据，也可以传入focusGetData在focus时获取数据
+  // todo 这里如果表单的查询比较多，可以异步队列调用
   watchEffect(() => {
     props.config.forEach(async (item, index) => {
-      if (
-        !item?.compConfig?.code &&
-        item?.compConfig?.customOptions &&
-        isEmpty(options.value[index])
-      ) {
+      if (!item.compConfig?.focusGetData) {
         await getOptions(item, index)
       }
     })
   })
 
-  // code存在时，focus事件获取数据
+  // focus事件获取数据
   const compFocus = async (item: FormConfigItemType, index: number) => {
     emits('focus')
-    if (item.type?.includes('select')) {
+    if (item.compConfig?.focusGetData) {
       await getOptions(item, index)
     }
   }
@@ -484,7 +489,9 @@
   })
 
   defineExpose({
-    formRef
+    get formRef() {
+      return formRef.value
+    }
   })
 </script>
 

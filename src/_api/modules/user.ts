@@ -3,50 +3,33 @@ import { $http } from '../http'
 
 import { ResponseType, AxiosRequestConfig } from '../responseType'
 
-interface Dto_DepartmentTreeDto {
-  id: number
-  name: string
-  children?: Dto_DepartmentTreeDto
-}
-interface Dto_Role {
-  id: number
-  name: string
-  createTime: string
-  desc: string
-  menuAuth: string[]
-  btnAuth: string[]
-}
-interface Dto_User {
-  id: number
-  username: string
-  roles: Dto_Role[]
-  department_id: number
-}
 interface Dto_CreateUserDto {
   username: string
   password: string
 }
-export type Body_postUser = Dto_CreateUserDto
-export type Res_getUser = Dto_User
-export type Res_getUserDepartmentTree = Dto_DepartmentTreeDto
+export type Body_postUserRegister = Dto_CreateUserDto
+interface Query_getUserByRoleNames {
+  roleNames: string
+}
+interface Query_getUserByRoleIds {
+  roleIds: string
+}
 
 class User {
-  /** 登录获取token */
-  postUser(
-    data: Body_postUser,
+  /**  */
+  postUserRegister(
+    data: Body_postUserRegister,
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<string>> {
+  ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/api/user',
+      url: '/api/user/register',
       method: 'post',
       ...{ data, ...axiosConfig }
     })
   }
 
-  /** 查询用户信息 */
-  getUser(
-    axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getUser>> {
+  /**  */
+  getUser(axiosConfig: AxiosRequestConfig = {}): Promise<ResponseType<any>> {
     return $http.request({
       url: '/api/user',
       method: 'get',
@@ -54,12 +37,48 @@ class User {
     })
   }
 
-  /** 查询部门树 */
-  getUserDepartmentTree(
+  /**  */
+  getUserList(
     axiosConfig: AxiosRequestConfig = {}
-  ): Promise<ResponseType<Res_getUserDepartmentTree[]>> {
+  ): Promise<ResponseType<any>> {
     return $http.request({
-      url: '/api/user/departmentTree',
+      url: '/api/user/list',
+      method: 'get',
+      ...{ ...axiosConfig }
+    })
+  }
+
+  /**  */
+  getUserByRoleNames(
+    params: Query_getUserByRoleNames,
+    axiosConfig: AxiosRequestConfig = {}
+  ): Promise<ResponseType<any>> {
+    return $http.request({
+      url: '/api/user/byRoleNames',
+      method: 'get',
+      ...{ params, ...axiosConfig }
+    })
+  }
+
+  /**  */
+  getUserByRoleIds(
+    params: Query_getUserByRoleIds,
+    axiosConfig: AxiosRequestConfig = {}
+  ): Promise<ResponseType<any>> {
+    return $http.request({
+      url: '/api/user/byRoleIds',
+      method: 'get',
+      ...{ params, ...axiosConfig }
+    })
+  }
+
+  /**  */
+  getUserById(
+    id: number,
+    axiosConfig: AxiosRequestConfig = {}
+  ): Promise<ResponseType<any>> {
+    return $http.request({
+      url: `/api/user/${id}`,
       method: 'get',
       ...{ ...axiosConfig }
     })
