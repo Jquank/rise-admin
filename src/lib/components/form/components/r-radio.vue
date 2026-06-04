@@ -18,8 +18,8 @@
 
   const props = defineProps({
     modelValue: {
-      type: Object,
-      default: () => ({})
+      type: [String, Number, Boolean, Object],
+      default: null
     },
     optionData: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

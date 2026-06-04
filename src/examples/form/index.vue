@@ -96,7 +96,7 @@
       {
         prop: 'team',
         label: '团队',
-        type: 'select',
+        type: 'selectObject',
         rule: [{ required: true, validator: checkDemo, trigger: 'change' }],
         compConfig: {
           code: 'team',

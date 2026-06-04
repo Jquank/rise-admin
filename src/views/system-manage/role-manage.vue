@@ -238,7 +238,7 @@
     isIndeterminate.value = checkedCount > 0 && checkedCount < btnTypes.length
   }
   const confirm = async () => {
-    let keys = treeRef.value!.getCheckedKeys(true) as string[]
+    let keys = treeRef.value!.getCheckedKeys() as string[]
     const { code } = await roleApi.postRolePermissions({
       roleId: currentRole.id,
       permissions: keys

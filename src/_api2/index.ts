@@ -22,8 +22,3 @@ import type * as AuthType from './modules/auth.ts'
 import { authApi } from './modules/auth.ts'
 export type { AuthType }
 export { authApi }
-
-import type * as HouseType from './modules/house.ts'
-import { houseApi } from './modules/house.ts'
-export type { HouseType }
-export { houseApi }

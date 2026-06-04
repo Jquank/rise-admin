@@ -33,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'layout',
     meta: { title: 'layout' },
-    redirect: '/Home',
+    redirect: '/home',
     component: () => import('@/layout/LayoutMain.vue'),
     children: [
       {
@@ -84,8 +84,7 @@ router.beforeEach(async (to) => {
     // 清空menuData和所有router
     commonStore.menuData = []
     layoutRoutes.children?.forEach((r) => {
-      if (r.name !== 'home' && router.hasRoute(r.name!))
-        router.removeRoute(r.name!)
+      if (router.hasRoute(r.name!)) router.removeRoute(r.name!)
     })
 
     // 获取用户信息
@@ -98,6 +97,7 @@ router.beforeEach(async (to) => {
       'name',
       userInfo.mergedMenuAuth.map((v) => v.split(':')[1])
     )
+
     // 添加权限路由
     resMap.forEach((r) => {
       if (!router.hasRoute(r.name!)) router.addRoute('layout', r)
@@ -105,7 +105,6 @@ router.beforeEach(async (to) => {
     // 添加完后，删除详情节点
     deleteNodeFromTreeList(resMap, false, 'meta.show')
     commonStore.menuData = resMap
-
     // 添加404
     router.addRoute('layout', {
       path: '/:pathMatch(.*)*',
@@ -114,7 +113,13 @@ router.beforeEach(async (to) => {
       meta: { title: '404' }
     })
     commonStore.initRouterFlag = true
-    // await router.replace(router.currentRoute.value.fullPath)
+    // 如果首页不在权限内，重定向到第一个可用菜单（处理 / 和 /home 两种起始路径）
+    if (!resMap.find((r) => r.name === 'home')) {
+      const firstMenu = resMap[0]
+      if (firstMenu && (to.path === '/' || to.path === '/home')) {
+        return firstMenu.path
+      }
+    }
     return to.fullPath
   }
 })

@@ -34,7 +34,7 @@
             }">
             <template #label="{ label }">
               <el-tooltip
-                :visible="labelTooltipVisibleArr[index].visible"
+                :visible="labelTooltipVisibleArr[item.prop]?.visible"
                 effect="dark"
                 placement="top-start">
                 <template #content>
@@ -42,8 +42,8 @@
                 </template>
                 <span
                   class="custom-form-item-label"
-                  @mouseenter="labelMouseEneter($event, index)"
-                  @mouseleave="labelMouseLeave(index)"
+                  @mouseenter="labelMouseEneter($event, item.prop)"
+                  @mouseleave="labelMouseLeave(item.prop)"
                   >{{ label }}</span
                 >
               </el-tooltip>
@@ -75,12 +75,13 @@
               :is="getFormComp(item)"
               v-bind="{
                 clearable: true,
-                optionData: options[index],
+                optionData: options[item.prop],
+                options: options[item.prop],
                 ...item.compConfig,
                 ...transformEventName(item?.compConfig?.events)
               }"
               v-model="formData[item.prop]"
-              @focus="compFocus(item, index)"
+              @focus="compFocus(item)"
               style="width: 100%">
               <!-- 处理组件插槽，支持text,html,组件 -->
               <template
@@ -146,6 +147,7 @@
 <script setup lang="ts">
   import {
     ref,
+    watch,
     watchEffect,
     PropType,
     reactive,
@@ -392,10 +394,11 @@
     })
   }
 
+  // 按 prop 存储 options（非 index，避免 config 长度变化时索引错位）
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const options = ref<any[]>([])
+  const options = ref<Record<string, any[]>>({})
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getOptions = async (item: FormConfigItemType, index: number) => {
+  const getOptions = async (item: FormConfigItemType) => {
     const code = item?.compConfig?.code
     const customRequest = item?.compConfig?.customRequest
     const customParams = item?.compConfig?.customParams
@@ -403,14 +406,14 @@
     if (customRequest && typeof customRequest === 'function') {
       // 自定义查询
       const { data } = await customRequest(customParams)
-      options.value[index] = data || []
+      options.value[item.prop] = data || []
     } else if (code) {
       // 通过code查询数据
       const { data } = await getDataByCode()
-      options.value[index] = data || []
+      options.value[item.prop] = data || []
     } else {
       // 否则返回customOptions
-      options.value[index] =
+      options.value[item.prop] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         item?.compConfig?.customOptions || []
     }
@@ -419,18 +422,18 @@
   // 获取初始数据，也可以传入focusGetData在focus时获取数据
   // todo 这里如果表单的查询比较多，可以异步队列调用
   watchEffect(() => {
-    props.config.forEach(async (item, index) => {
+    props.config.forEach(async (item) => {
       if (!item.compConfig?.focusGetData) {
-        await getOptions(item, index)
+        await getOptions(item)
       }
     })
   })
 
   // focus事件获取数据
-  const compFocus = async (item: FormConfigItemType, index: number) => {
+  const compFocus = async (item: FormConfigItemType) => {
     emits('focus')
     if (item.compConfig?.focusGetData) {
-      await getOptions(item, index)
+      await getOptions(item)
     }
   }
 
@@ -465,22 +468,32 @@
         return prev
       }, {})
   })
-  const labelTooltipVisibleArr = ref(
-    Array.from({ length: props.config.length || 100 }, () => ({
-      visible: false
-    }))
+  const labelTooltipVisibleArr = ref<Record<string, { visible: boolean }>>({})
+  watch(
+    () => props.config.map((c) => c.prop),
+    (keys) => {
+      const map: Record<string, { visible: boolean }> = {}
+      keys.forEach((k) => {
+        map[k] = labelTooltipVisibleArr.value[k] || { visible: false }
+      })
+      labelTooltipVisibleArr.value = map
+    },
+    { immediate: true }
   )
 
-  const labelMouseEneter = (e: MouseEvent, index: number) => {
+  const labelMouseEneter = (e: MouseEvent, prop: string) => {
     const tar = e.target as HTMLElement
+    if (!labelTooltipVisibleArr.value[prop]) return
     if (tar.scrollWidth > tar.clientWidth) {
-      labelTooltipVisibleArr.value[index].visible = true
+      labelTooltipVisibleArr.value[prop].visible = true
     } else {
-      labelTooltipVisibleArr.value[index].visible = false
+      labelTooltipVisibleArr.value[prop].visible = false
     }
   }
-  const labelMouseLeave = (index: number) => {
-    labelTooltipVisibleArr.value[index].visible = false
+  const labelMouseLeave = (prop: string) => {
+    if (labelTooltipVisibleArr.value[prop]) {
+      labelTooltipVisibleArr.value[prop].visible = false
+    }
   }
 
   onMounted(() => {
@@ -519,7 +532,7 @@
         word-break: break-all;
       }
       .custom-form-item-label {
-        width: 100%;
+        width: auto;
         max-width: v-bind('props.mexLabelWidth');
         overflow: hidden;
         text-overflow: ellipsis;

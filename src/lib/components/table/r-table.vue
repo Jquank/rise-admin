@@ -1,3 +1,24 @@
+<!--
+  RTable — 配置驱动表格组件
+
+  Props:
+    columns       - 列配置数组，每项继承 el-table-column 所有属性 [{ prop, label, width?, ... }]
+    data          - 表格数据源 any[]
+    usePagination - 是否启用分页（默认 true），启用时需提供 searchMethod
+    searchMethod  - 分页回调 (pageParams) => Promise<totalCount>，返回总条数
+    loading       - loading 状态
+    columnWidth   - 统一列宽（优先级低于 column.width）
+    heightFillUp  - 是否撑满父容器高度
+
+  Slots:
+    #default-{prop}        - 完整自定义列（需传入 el-table-column 组件）
+    #column-{prop}         - 自定义列 default 插槽，{ row, column }
+    #column-{prop}-header  - 自定义列表头
+    #column-{prop}-{slotName} - 自定义列的其他插槽
+
+  高级用法 — mergeColumnConfig(columns, config):
+    将自定义配置合并到后端返回的列配置中，同名 prop 覆盖，'index'/'selection' 插入列首。
+-->
 <template>
   <el-auto-resizer class="r-table-box" v-loading="props.loading">
     <template #default="{ width }">

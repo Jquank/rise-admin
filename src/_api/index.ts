@@ -23,12 +23,22 @@ import { authApi } from './modules/auth.ts'
 export type { AuthType }
 export { authApi }
 
-import type * as HouseType from './modules/house.ts'
-import { houseApi } from './modules/house.ts'
-export type { HouseType }
-export { houseApi }
-
 import type * as EnumType from './modules/enum.ts'
 import { enumApi } from './modules/enum.ts'
 export type { EnumType }
 export { enumApi }
+
+import type * as HotspotType from './modules/hotspot.ts'
+import { hotspotApi } from './modules/hotspot.ts'
+export type { HotspotType }
+export { hotspotApi }
+
+import type * as AiImageType from './modules/aiImage.ts'
+import { aiImageApi } from './modules/aiImage.ts'
+export type { AiImageType }
+export { aiImageApi }
+
+import type * as WalletType from './modules/wallet.ts'
+import { walletApi } from './modules/wallet.ts'
+export type { WalletType }
+export { walletApi }

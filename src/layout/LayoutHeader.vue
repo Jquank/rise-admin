@@ -9,11 +9,10 @@
                 ? 'a-fenleizhediecebianlan'
                 : 'a-cebianlanfenleizhedie'
             "
-            :size="18"
-          />
+            :size="18" />
         </div>
         <!-- <img class="logo-img" src="../assets/images/web-logo.jpg" alt="logo" /> -->
-        <span class="logo-text">Rise Admin</span>
+        <span class="logo-text">Plume</span>
       </div>
       <!-- <div class="bread-nav">
         <div
@@ -32,6 +31,10 @@
       </div> -->
     </div>
     <div class="header-right">
+      <div v-if="balance !== null" class="balance-display">
+        <span class="balance-label">余额</span>
+        <span class="balance-amount">¥{{ balance.toFixed(2) }}</span>
+      </div>
       <el-dropdown>
         <div class="header-handle-box">
           <SvgIcon icon="language-sharp" :size="20"></SvgIcon>
@@ -70,8 +73,7 @@
     <el-drawer
       v-model="drawer"
       :with-header="false"
-      modal-class="theme-setting-drawer"
-    >
+      modal-class="theme-setting-drawer">
       <div class="block">
         <div class="title">整体风格</div>
         <div class="square-box">
@@ -79,19 +81,16 @@
             v-for="(item, index) in webStyleList"
             :key="item"
             :class="'square-color ' + 'square-color-' + item"
-            @click="settingStyle(item, index)"
-          >
+            @click="settingStyle(item, index)">
             <div
               class="selected"
               :style="{
                 display: activeIndexStyle === index ? 'block' : 'none'
-              }"
-            >
+              }">
               <SvgIcon
                 icon="selected"
                 color="var(--el-color-primary)"
-                :size="30"
-              ></SvgIcon>
+                :size="30"></SvgIcon>
             </div>
           </div>
         </div>
@@ -104,14 +103,12 @@
             :key="item.type"
             class="square-color square-color-small"
             :style="{ 'background-color': item.color }"
-            @click="settingTheme(item, index)"
-          >
+            @click="settingTheme(item, index)">
             <div
               class="selected"
               :style="{
                 display: activeIndexTheme === index ? 'block' : 'none'
-              }"
-            >
+              }">
               <SvgIcon icon="selected" color="#fff" :size="20"></SvgIcon>
             </div>
           </div>
@@ -122,11 +119,12 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { langs } from '@/locales/index.ts'
   import { rgbChange } from '@/utils/common.ts'
   import { useCommonStore } from '@/store/common.ts'
+  import { walletApi } from '@/_api'
 
   interface SelfEvent extends Event {
     resizeEcharts: boolean
@@ -243,6 +241,19 @@
     sessionStorage.clear()
     router.replace('/login')
   }
+
+  const balance = ref<number | null>(null)
+
+  async function fetchBalance() {
+    try {
+      const { data } = await walletApi.getMyWallet()
+      balance.value = data.balance / 100 // 分转元
+    } catch {
+      balance.value = null
+    }
+  }
+
+  onMounted(fetchBalance)
 </script>
 
 <style lang="less" scoped>
@@ -371,6 +382,24 @@
           }
         }
       }
+    }
+  }
+  .balance-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+    padding: 0 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    .balance-label {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    .balance-amount {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--el-color-warning);
     }
   }
 </style>

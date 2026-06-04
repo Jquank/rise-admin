@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
   import { ref, reactive } from 'vue'
-  import { houseApi } from '@/_api/index'
+  import { userApi } from '@/_api/index'
   // import { RPagination, RGridCollapse } from '@jquank/rise-ui'
   import { RTable, RForm } from '@/lib/index'
   const tableData = ref([])
@@ -107,8 +107,8 @@
   const listSerach = (page) => {
     showTableLoading.value = true
     pageParams = Object.assign({}, page)
-    return houseApi
-      .postHouseTenants(pageParams)
+    return userApi
+      .getUserList()
       .then((res) => {
         showTableLoading.value = false
         tableData.value = res.data.list

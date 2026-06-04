@@ -76,7 +76,7 @@
       prop: 'type',
       label: '类型',
       required: true,
-      type: 'select',
+      type: 'selectObject',
       compConfig: {
         customRequest: enumApi.getEnumType
       }

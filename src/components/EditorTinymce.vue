@@ -3,8 +3,7 @@
     <Editor
       api-key="zw08p5owxw4pzuxjkiexwsyzryclbc6uyfxih22ta138egu3"
       :init="init"
-      v-bind="$attrs"
-    />
+      v-bind="$attrs" />
   </div>
 </template>
 
@@ -27,7 +26,12 @@
       blockquote subscript superscript removeformat | \
       table image media charmap emoticons hr pagebreak insertdatetime print preview | fullscreen | \
       bdmap indent2em lineheight formatpainter axupimgs',
-    language: langsMap[language] || langsMap.zh
+    language: langsMap[language] || langsMap.zh,
+    // 允许本地图片 & 代理图片路径
+    extended_valid_elements: 'img[src|alt|style|loading|class|width|height]',
+    // 不过滤图片 URL
+    image_caption: true,
+    convert_urls: false
   }
 </script>
 

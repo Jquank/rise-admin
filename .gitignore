@@ -23,3 +23,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build analysis & temp files
+stats.html
+vite.config.ts.timestamp-*.mjs
+
+# AI agent workspace files (not for deployment)
+.agents

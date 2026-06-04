@@ -23,13 +23,20 @@ export const useCommonStore = defineStore('common', () => {
   async function getUserInfoAndAuth() {
     try {
       const { data } = await userApi.getUser()
-      // 合并多角色权限
-      const menuAuth = data.roles
-        .map((item) => item.permissions.filter((v) => v.includes('menu:')))
-        .reduce((pre, cur) => pre.concat(cur), [])
-      const btnAuth = data.roles
-        .map((item) => item.permissions.filter((v) => v.includes('btn:')))
-        .reduce((pre, cur) => pre.concat(cur), [])
+      // 合并多角色权限（空安全处理）
+      const roles = data.roles || []
+      const menuAuth: string[] = []
+      const btnAuth: string[] = []
+      roles.forEach((item: any) => {
+        if (item.permissions) {
+          menuAuth.push(
+            ...item.permissions.filter((v: string) => v.startsWith('menu:'))
+          )
+          btnAuth.push(
+            ...item.permissions.filter((v: string) => v.startsWith('btn:'))
+          )
+        }
+      })
       const mergedAuth = {
         mergedMenuAuth: [...new Set(menuAuth)],
         mergedBtnAuth: [...new Set(btnAuth)]
@@ -37,7 +44,7 @@ export const useCommonStore = defineStore('common', () => {
       userInfo.value = { ...data, ...mergedAuth }
     } catch (error) {
       console.error(error)
-      userInfo.value = {}
+      userInfo.value = { mergedMenuAuth: ['menu:home'], mergedBtnAuth: [] }
     }
   }
   return {

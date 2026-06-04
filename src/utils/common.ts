@@ -179,26 +179,47 @@ export const findPathTreeByValue = <
       currentAuthRoutePath = root.path
       resItem.push(...path)
     } else if (
+      currentAuthRoutePath &&
       root.path.includes('/:') &&
       root.path.includes(currentAuthRoutePath)
     ) {
       // 找到相邻的详情路由（如果有）, 规则是详情路由的path包含权限路由的path和:/
+      resItem.push(...path)
+    } else if (
+      currentAuthRoutePath &&
+      root.path === currentAuthRoutePath + '/'
+    ) {
+      // 匹配到权限路由后，其空路径子路由（默认渲染页）也需要包含
+      resItem.push(...path)
+    } else if (
+      // ✅ 新增：show:false 的子路由也自动捕获
+      currentAuthRoutePath &&
+      root.meta?.show === false &&
+      root.path.includes(currentAuthRoutePath)
+    ) {
       resItem.push(...path)
     }
     if (root.children) {
       root.children.forEach((c) => {
         dfs(c)
       })
-      // 找到相邻的详情路由（如果有）， 规则是详情路由的path包含权限路由的path和:/
-      try {
-        const sibings = root.children.filter(
-          (r) => r.path.includes('/:') && r.path.includes(root.path)
-        )
-        if (sibings.length) {
-          resItem.push(...sibings)
+      // 找到相邻的详情路由（如果有），规则是详情路由的path包含权限路由的path和:/
+      // 仅在当前节点已匹配时处理（避免无关路由泄漏）
+      if (resItem.includes(root)) {
+        try {
+          const sibings = root.children.filter(
+            (r) =>
+              (r.meta?.show === false ||
+                r.path.includes('/:') ||
+                r.path === root.path + '/') &&
+              r.path.includes(root.path)
+          )
+          if (sibings.length) {
+            resItem.push(...sibings)
+          }
+        } catch (error) {
+          /* empty */
         }
-      } catch (error) {
-        /* empty */
       }
     }
     path.pop()
@@ -208,6 +229,7 @@ export const findPathTreeByValue = <
     const item = arr[i]
     resItem = []
     path = []
+    currentAuthRoutePath = ''
     dfs(item)
     if (resItem.length) {
       temp.push(cloneDeep([...new Set(resItem)]))
@@ -219,6 +241,7 @@ export const findPathTreeByValue = <
     for (let i = arr.length - 1; i > -1; i--) {
       const item = arr[i]
       const rest = arr.filter((r) => r !== item)
+      console.log(cloneDeep(rest), 'rest')
       const child = item.children
       if (child && child.length) {
         const res = child.filter((c) => rest.find((r) => r[prop] === c[prop]))

@@ -1,12 +1,7 @@
 <template>
   <div class="layout">
     <LayoutHeader></LayoutHeader>
-    <el-watermark
-      content="watermark"
-      :font="font"
-      :z-index="5000"
-      :offset="[50, 50]"
-      class="layout-main">
+    <div class="layout-main">
       <nav class="layout-left">
         <LayoutNav></LayoutNav>
       </nav>
@@ -34,42 +29,19 @@
           </div>
         </main>
       </div>
-    </el-watermark>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, reactive, watch } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import LayoutHeader from './LayoutHeader.vue'
   import LayoutNav from './LayoutNav.vue'
-  import { useCommonStore } from '@/store/common.ts'
 
   const route = useRoute()
 
-  const commonStore = useCommonStore()
-  const font = reactive({
-    fontSize: 18,
-    color: 'rgba(0, 0, 0, 0.1)'
-  })
   const scrollBarRef = ref<{ update: () => void }>()
-  watch(
-    () => commonStore.webStyle,
-    (newVal) => {
-      switch (newVal) {
-        case 1:
-          font.color = 'rgba(255, 255, 255, 0.06)'
-          break
-        case 2:
-          font.color = 'rgba(0, 0, 0, 0.06)'
-          break
-        default:
-          font.color = 'rgba(255, 255, 255, 0.04)'
-          break
-      }
-    },
-    { immediate: true }
-  )
   // 由于滚动条组件是公用的，这里更新滚动条状态，防止切换时出现上个页面的滚动条
   watch(
     () => route.path,
@@ -131,7 +103,7 @@
         //   }
         // }
         .router-view-box {
-          padding: v-bind('route.name!=="home"?"24px":0');
+          padding: v-bind('route.name!=="home"?"16px":0');
           height: 100%;
         }
       }

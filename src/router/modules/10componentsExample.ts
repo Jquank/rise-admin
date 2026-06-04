@@ -8,12 +8,6 @@ const routes: Array<RouteRecordRaw> = [
     component: EmptyRouterView,
     children: [
       {
-        path: 'tinymce',
-        name: 'tinymce',
-        meta: { title: '富文本编辑器', deep: 2 },
-        component: () => import('@/examples/editor/editorTinymce.vue')
-      },
-      {
         path: 'download',
         name: 'download',
         meta: { title: '文件下载', deep: 2 },

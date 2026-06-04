@@ -1,23 +1,88 @@
 <template>
   <div class="login-wrapper">
-    <canvas id="canvas" class="login-canvas"></canvas>
-
-    <div class="login-box">
-      <div class="login-form">
-        <el-select v-model="username" type="info">
-          <el-option label="admin" value="admin" type="info"></el-option>
-          <el-option label="user" value="user" type="info"></el-option>
-        </el-select>
-        <el-input
-          v-model="password"
-          class="password"
-          type="password"
-          placeholder="请输入密码"></el-input>
+    <!-- 左侧品牌区 -->
+    <div class="login-left">
+      <div class="brand-content">
+        <div class="brand-icon">
+          <svg
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect
+              width="64"
+              height="64"
+              rx="16"
+              fill="currentColor"
+              fill-opacity="0.15" />
+            <path
+              d="M20 44V20l12 10 12-10v24"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+            <circle cx="32" cy="28" r="3" fill="currentColor" />
+          </svg>
+        </div>
+        <h1 class="brand-name">Plume</h1>
+        <p class="brand-desc">AI 驱动的智能图文创作平台</p>
+        <div class="brand-features">
+          <span>🎨 AI 生图</span>
+          <span>📝 热点成文</span>
+          <span>⚡ 极速出稿</span>
+        </div>
       </div>
-      <p class="error-message ellipsis">{{ errorMessage }}</p>
-      <el-button @click="login" type="primary" class="login-btn"
-        >登录</el-button
-      >
+    </div>
+
+    <!-- 右侧登录区 -->
+    <div class="login-right">
+      <div class="login-box">
+        <h2 class="login-title">{{ isRegister ? '创建账号' : '欢迎回来' }}</h2>
+        <p class="login-subtitle">
+          {{ isRegister ? '注册后即可使用全部 AI 功能' : '登录您的账号以继续' }}
+        </p>
+        <div class="login-form">
+          <el-input
+            v-model="username"
+            placeholder="用户名"
+            :prefix-icon="User"
+            size="large"
+            clearable />
+          <el-input
+            v-model="password"
+            class="form-item"
+            type="password"
+            placeholder="密码"
+            :prefix-icon="Lock"
+            size="large"
+            show-password
+            @keyup.enter="handleSubmit" />
+          <el-input
+            v-if="isRegister"
+            v-model="confirmPassword"
+            class="form-item"
+            type="password"
+            placeholder="确认密码"
+            :prefix-icon="Lock"
+            size="large"
+            show-password
+            @keyup.enter="handleSubmit" />
+        </div>
+        <p class="error-message">{{ errorMessage }}</p>
+        <el-button
+          @click="handleSubmit"
+          type="primary"
+          class="login-btn"
+          size="large"
+          :loading="loading">
+          {{ isRegister ? '注 册' : '登 录' }}
+        </el-button>
+        <p class="toggle-mode">
+          {{ isRegister ? '已有账号？' : '还没有账号？' }}
+          <el-link type="primary" @click="toggleMode">
+            {{ isRegister ? '去登录' : '立即注册' }}
+          </el-link>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -25,213 +90,233 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
+  import { User, Lock } from '@element-plus/icons-vue'
   import { useCommonStore } from '@/store/common.ts'
-  import $http from '@/utils/http'
-  import { authApi } from '@/_api/index'
+  import { authApi, userApi } from '@/_api/index'
 
   const commonStore = useCommonStore()
   const router = useRouter()
-  const username = ref('admin')
-  const password = ref('123456')
-  let errorMessage = ref('')
-  const login = async () => {
-    const params = {
-      username: username.value,
-      password: password.value
-    }
-    const { data } = await authApi.postAuthLogin(params)
-    const token = data.token_type + ' ' + data.access_token
-    $http.defaults.headers.common['Authorization'] = token
-    localStorage.setItem('token', token)
-    commonStore.initRouterFlag = false
-    router.replace({ path: '/home' })
+  const username = ref('')
+  const password = ref('')
+  const confirmPassword = ref('')
+  const isRegister = ref(false)
+  const loading = ref(false)
+  const errorMessage = ref('')
+
+  const toggleMode = () => {
+    isRegister.value = !isRegister.value
+    errorMessage.value = ''
+    confirmPassword.value = ''
   }
 
-  //画星空背景
-  function drawStars() {
-    const canvas = document.getElementById('canvas')! as HTMLCanvasElement
-    const ctx = canvas.getContext('2d')!
-    let w = (canvas.width = window.innerWidth)
-    let h = (canvas.height = window.innerHeight)
-    let hue = 217 //色调色彩
-    let stars: Array<Star> = [] //保存所有星星
-    let maxStars = 1300 //星星数量
-
-    //canvas2是用来创建星星的源图像，即母版，
-    //根据星星自身属性的大小来设置
-    const canvas2 = document.createElement('canvas')! as HTMLCanvasElement
-    const ctx2 = canvas2.getContext('2d')!
-    canvas2.width = 100
-    canvas2.height = 100
-    //创建径向渐变，从坐标(half，half)半径为0的圆开始，
-    //到坐标为(half,half)半径为half的圆结束
-    let half = canvas2.width / 2
-    let gradient2 = ctx2.createRadialGradient(half, half, 0, half, half, half)
-    gradient2.addColorStop(0.025, '#CCC')
-    //hsl是另一种颜色的表示方式，
-    //h->hue,代表色调色彩，0为red，120为green，240为blue
-    //s->saturation，代表饱和度，0%-100%
-    //l->lightness，代表亮度，0%为black，100%位white
-    gradient2.addColorStop(0.1, 'hsl(' + hue + ', 61%, 33%)')
-    gradient2.addColorStop(0.25, 'hsl(' + hue + ', 64%, 6%)')
-    gradient2.addColorStop(1, 'transparent')
-
-    ctx2.fillStyle = gradient2
-    ctx2.beginPath()
-    ctx2.arc(half, half, half, 0, Math.PI * 2)
-    ctx2.fill()
-
-    // End cache
-    function random(min: number, max?: number) {
-      if (max === undefined) {
-        max = min
-        min = 0
-      }
-      if (min > max) {
-        let hold = max
-        max = min
-        min = hold
-      }
-      return Math.floor(Math.random() * (max - min + 1)) + min
+  const handleSubmit = async () => {
+    errorMessage.value = ''
+    if (!username.value.trim()) {
+      errorMessage.value = '请输入用户名'
+      return
     }
-
-    function maxOrbit(x: number, y: number) {
-      let max = Math.max(x, y)
-      let diameter = Math.round(Math.sqrt(max * max + max * max))
-      //星星移动范围，值越大范围越小，
-      return diameter / 2
+    if (!password.value) {
+      errorMessage.value = '请输入密码'
+      return
     }
-    class Star {
-      orbitRadius: number
-      radius: number
-      orbitX: number
-      orbitY: number
-      timePassed: number
-      speed: number
-      alpha: number
-      constructor() {
-        this.orbitRadius = random(maxOrbit(w, h))
-        //星星大小，半径越小，星星也越小，即外面的星星会比较大
-        this.radius = random(60, this.orbitRadius) / 8
-        //所有星星都是以屏幕的中心为圆心
-        this.orbitX = w / 2
-        this.orbitY = h / 1.5
-        //星星在旋转圆圈位置的角度,每次增加speed值的角度
-        //利用正弦余弦算出真正的x、y位置
-        this.timePassed = random(0, maxStars)
-        //星星移动速度
-        // this.speed = random(this.orbitRadius) / 500000
-        this.speed = 0.0001
-        //星星图像的透明度
-        this.alpha = random(2, 10) / 10
+    if (isRegister.value && password.value !== confirmPassword.value) {
+      errorMessage.value = '两次输入的密码不一致'
+      return
+    }
+    loading.value = true
+    try {
+      if (isRegister.value) {
+        await userApi.postUserRegister({
+          username: username.value.trim(),
+          password: password.value
+        })
       }
-      draw(ctx: CanvasRenderingContext2D) {
-        //星星围绕在以屏幕中心为圆心，半径为orbitRadius的圆旋转
-        let x = Math.sin(this.timePassed) * this.orbitRadius + this.orbitX
-        let y = Math.cos(this.timePassed) * this.orbitRadius + this.orbitY
-        let twinkle = random(10)
-
-        //星星每次移动会有1/10的几率变亮或者变暗
-        if (twinkle === 1 && this.alpha > 0) {
-          //透明度降低，变暗
-          this.alpha -= 0.05
-        } else if (twinkle === 2 && this.alpha < 1) {
-          //透明度升高，变亮
-          this.alpha += 0.05
-        }
-
-        ctx.globalAlpha = this.alpha
-        //使用canvas2作为源图像来创建星星，
-        //位置在x - this.radius / 2, y - this.radius / 2
-        //大小为 this.radius
-        ctx.drawImage(
-          canvas2,
-          x - this.radius / 2,
-          y - this.radius / 2,
-          this.radius,
-          this.radius
-        )
-        //没旋转一次，角度就会增加
-        this.timePassed += this.speed
-      }
+      const { data } = await authApi.postAuthLogin({
+        username: username.value.trim(),
+        password: password.value
+      })
+      const token = data.token_type + ' ' + data.access_token
+      localStorage.setItem('token', token)
+      commonStore.initRouterFlag = false
+      router.replace({ path: '/home' })
+    } catch (err: any) {
+      errorMessage.value =
+        err?.message || err?.data?.message || '操作失败，请重试'
+    } finally {
+      loading.value = false
     }
-
-    //初始化所有星星
-    for (var i = 0; i < maxStars; i++) {
-      stars.push(new Star())
-    }
-
-    function animation() {
-      //以新图像覆盖已有图像的方式进行绘制背景颜色
-      ctx.globalCompositeOperation = 'source-over'
-      ctx.globalAlpha = 0.5 //尾巴
-      ctx.fillStyle = 'hsla(' + hue + ', 64%, 6%, 2)'
-      ctx.fillRect(0, 0, w, h)
-
-      //源图像和目标图像同时显示，重叠部分叠加颜色效果
-      ctx.globalCompositeOperation = 'lighter'
-      for (let i = 0, l = stars.length; i < l; i++) {
-        stars[i].draw(ctx)
-      }
-      window.requestAnimationFrame(animation)
-    }
-
-    animation()
   }
 
   onMounted(() => {
-    const htl = document.documentElement
-    htl.classList.add('default')
-    htl.removeAttribute('style')
-    drawStars()
+    const webStyle = commonStore.webStyle
+    const themeClass = ['default', 'dark', 'light'][webStyle] || 'default'
+    document.documentElement.classList.add(themeClass)
   })
 </script>
 
 <style lang="less" scoped>
   .login-wrapper {
+    display: flex;
     width: 100%;
-    height: 100%;
-    // background-color: var(--el-color-primary-light-3);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  // ===== 左侧品牌区 =====
+  .login-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      135deg,
+      var(--el-color-primary-light-5) 0%,
+      var(--el-color-primary) 100%
+    );
     position: relative;
     overflow: hidden;
-    .login-canvas {
+
+    &::before {
+      content: '';
       position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 80%;
+      height: 200%;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 70%
+      );
+    }
+  }
+
+  .brand-content {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    max-width: 360px;
+    padding: 40px;
+  }
+
+  .brand-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 24px;
+    color: #fff;
+
+    svg {
       width: 100%;
       height: 100%;
-      z-index: -1;
-      filter: alpha(opacity=20);
-      // opacity: 0.2;
+    }
+  }
+
+  .brand-name {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    letter-spacing: 2px;
+  }
+
+  .brand-desc {
+    font-size: 15px;
+    opacity: 0.85;
+    margin: 0 0 32px;
+    line-height: 1.6;
+  }
+
+  .brand-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+
+    span {
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      font-size: 13px;
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  // ===== 右侧登录区 =====
+  .login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--el-bg-color);
+  }
+
+  .login-box {
+    width: 380px;
+    padding: 48px 40px;
+  }
+
+  .login-title {
+    font-size: 26px;
+    color: var(--el-text-color-primary);
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+
+  .login-subtitle {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+    margin: 0 0 32px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+
+    .form-item {
+      margin-top: 16px;
+    }
+
+    // 覆盖浏览器自动填充的白色背景
+    :deep(.el-input__inner) {
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus {
+        box-shadow: 0 0 0 1000px var(--el-fill-color-blank) inset !important;
+        -webkit-text-fill-color: var(--el-text-color-primary) !important;
+        caret-color: var(--el-text-color-primary);
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    }
+  }
+
+  .error-message {
+    min-height: 20px;
+    line-height: 20px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--el-color-error);
+  }
+
+  .login-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .toggle-mode {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+  }
+
+  // ===== 响应式：小屏隐藏左侧 =====
+  @media (max-width: 768px) {
+    .login-left {
+      display: none;
     }
     .login-box {
-      position: absolute;
-      left: 50%;
-      top: 30%;
-      transform: translate(-50%, -50%);
-      width: 350px;
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      margin: auto;
-      padding: 40px 30px;
-      display: flex;
-      flex-direction: column;
-    }
-    .login-form {
-      display: flex;
-      flex-direction: column;
-    }
-    .password {
-      margin-top: 20px;
-    }
-    .error-message {
-      height: 20px;
-      line-height: 20px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--el-color-error);
-      text-align: center;
-    }
-    .login-btn {
-      margin-top: 10px;
+      width: 100%;
+      max-width: 380px;
+      padding: 32px 24px;
     }
   }
 </style>

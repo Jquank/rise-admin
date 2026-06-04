@@ -8,17 +8,21 @@ const router = useRouter()
 // 创建axios实列
 const axiosConfig: AxiosRequestConfig = {
   baseURL: import.meta.env.VITE_HTTP_URL || '',
-  timeout: 1 * 60 * 1000,
+  timeout: 5 * 60 * 1000,
   // withCredentials: true,
   cancelRepeatRequest: false // 是否取消重复请求
 }
 const instance = axios.create(axiosConfig)
-const token = localStorage.getItem('token') || ''
-instance.defaults.headers.common['Authorization'] = token
 
-// 请求拦截
+// 请求拦截 — 动态读取token，确保登录后立即生效
 instance.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem('token') || ''
+    if (token) {
+      config.headers['Authorization'] = token.startsWith('Bearer ')
+        ? token
+        : `Bearer ${token}`
+    }
     return config
   },
   (error) => {

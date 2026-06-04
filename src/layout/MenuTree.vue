@@ -4,8 +4,7 @@
       v-if="item.children && item.children.length && item.meta?.show !== false"
       :index="item.path"
       popper-class="self-el-popper"
-      :class="'el-sub-menu-deep' + item.meta?.deep"
-    >
+      :class="'el-sub-menu-deep' + item.meta?.deep">
       <template #title>
         <SvgIcon v-if="item.meta?.icon" :icon="item.meta?.icon" />
         <span>{{ item.meta?.title }}</span>
@@ -13,8 +12,7 @@
       <!-- 递归MenuTree -->
       <MenuTree
         :menuData="item.children"
-        v-if="item.children && item.children.length"
-      ></MenuTree>
+        v-if="item.children && item.children.length"></MenuTree>
     </el-sub-menu>
     <el-menu-item
       v-if="
@@ -22,8 +20,7 @@
         item.meta?.show !== false
       "
       :index="item.path"
-      :class="'el-menu-item-deep' + item.meta?.deep"
-    >
+      :class="'el-menu-item-deep' + item.meta?.deep">
       <SvgIcon v-if="item.meta?.icon" :icon="item.meta?.icon" />
       <span>{{ item.meta?.title }}</span>
     </el-menu-item>
