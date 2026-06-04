@@ -67,12 +67,12 @@
   const tableRef = ref()
 
   const tableColumns = [
-    { prop: 'user', label: '用户', minWidth: 100 },
-    { prop: 'type', label: '类型', width: 80 },
-    { prop: 'amount', label: '金额', width: 100 },
-    { prop: 'balanceChange', label: '余额变化', width: 160 },
-    { prop: 'description', label: '备注', minWidth: 140 },
-    { prop: 'createdAt', label: '时间', width: 160 }
+    { prop: 'user', label: '用户' },
+    { prop: 'type', label: '类型' },
+    { prop: 'amount', label: '金额' },
+    { prop: 'balanceChange', label: '余额变化' },
+    { prop: 'description', label: '备注' },
+    { prop: 'createdAt', label: '时间' }
   ]
 
   function tagType(type: string) {

@@ -35,7 +35,7 @@
         <span class="balance-label">余额</span>
         <span class="balance-amount">¥{{ balance.toFixed(2) }}</span>
       </div>
-      <el-dropdown>
+      <el-dropdown v-if="false">
         <div class="header-handle-box">
           <SvgIcon icon="language-sharp" :size="20"></SvgIcon>
         </div>

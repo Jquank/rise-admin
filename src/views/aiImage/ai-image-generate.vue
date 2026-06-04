@@ -64,7 +64,7 @@
         <el-card shadow="never">
           <template #header>
             <div class="card-header">
-              <span>🖼️ 生成历史</span>
+              <span>🖼️ 生成历史 <span class="retention-hint">（图片保留3天，请尽快下载）</span></span>
               <div class="header-btns">
                 <el-button
                   size="small"
@@ -511,6 +511,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+  }
+  .retention-hint {
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+    white-space: nowrap;
   }
   .cost-estimate {
     font-size: 13px;
