@@ -60,6 +60,9 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item @click="showChangePwd = true"
+              >修改密码</el-dropdown-item
+            >
             <el-dropdown-item @click="loginOut">{{
               $t('common.loginOut')
             }}</el-dropdown-item>
@@ -115,16 +118,59 @@
         </div>
       </div>
     </el-drawer>
+
+    <!-- 修改密码 -->
+    <el-dialog
+      v-model="showChangePwd"
+      title="修改密码"
+      width="420px"
+      :close-on-click-modal="false">
+      <el-form
+        ref="pwdFormRef"
+        :model="pwdForm"
+        :rules="pwdRules"
+        label-width="0"
+        @submit.prevent="handleChangePwd">
+        <el-form-item prop="oldPassword">
+          <el-input
+            v-model="pwdForm.oldPassword"
+            type="password"
+            placeholder="旧密码"
+            show-password />
+        </el-form-item>
+        <el-form-item prop="newPassword">
+          <el-input
+            v-model="pwdForm.newPassword"
+            type="password"
+            placeholder="新密码（至少6位，需包含字母和数字）"
+            show-password />
+        </el-form-item>
+        <el-form-item prop="confirmPassword">
+          <el-input
+            v-model="pwdForm.confirmPassword"
+            type="password"
+            placeholder="确认新密码"
+            show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showChangePwd = false">取消</el-button>
+        <el-button type="primary" :loading="changingPwd" @click="handleChangePwd"
+          >确定</el-button
+        >
+      </template>
+    </el-dialog>
   </header>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
+  import { ref, reactive, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { langs } from '@/locales/index.ts'
   import { rgbChange } from '@/utils/common.ts'
   import { useCommonStore } from '@/store/common.ts'
-  import { walletApi } from '@/_api'
+  import { walletApi, userApi } from '@/_api'
+  import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
   interface SelfEvent extends Event {
     resizeEcharts: boolean
@@ -240,6 +286,58 @@
   const loginOut = () => {
     sessionStorage.clear()
     router.replace('/login')
+  }
+
+  const showChangePwd = ref(false)
+  const changingPwd = ref(false)
+  const pwdFormRef = ref<FormInstance>()
+  const pwdForm = reactive({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const pwdRules: FormRules = {
+    oldPassword: [{ required: true, message: '请输入旧密码', trigger: 'blur' }],
+    newPassword: [
+      { required: true, message: '请输入新密码', trigger: 'blur' },
+      { min: 6, message: '新密码至少需要6位', trigger: 'blur' },
+      {
+        pattern: /^(?=.*[a-zA-Z])(?=.*\d)/,
+        message: '新密码必须包含字母和数字',
+        trigger: 'blur'
+      }
+    ],
+    confirmPassword: [
+      { required: true, message: '请确认新密码', trigger: 'blur' },
+      {
+        validator: (_rule: any, value: string, cb: Function) => {
+          if (value !== pwdForm.newPassword) {
+            cb(new Error('两次输入的密码不一致'))
+          } else {
+            cb()
+          }
+        },
+        trigger: 'blur'
+      }
+    ]
+  }
+  async function handleChangePwd() {
+    const valid = await pwdFormRef.value?.validate().catch(() => false)
+    if (!valid) return
+    changingPwd.value = true
+    try {
+      await userApi.changePassword({
+        oldPassword: pwdForm.oldPassword,
+        newPassword: pwdForm.newPassword
+      })
+      ElMessage.success('密码修改成功')
+      showChangePwd.value = false
+      pwdFormRef.value?.resetFields()
+    } catch (err: any) {
+      ElMessage.error(err?.message || '修改失败')
+    } finally {
+      changingPwd.value = false
+    }
   }
 
   const balance = ref<number | null>(null)

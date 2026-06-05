@@ -111,17 +111,32 @@
 
   const handleSubmit = async () => {
     errorMessage.value = ''
-    if (!username.value.trim()) {
+    const name = username.value.trim()
+    if (!name) {
       errorMessage.value = '请输入用户名'
+      return
+    }
+    if (name.length > 15) {
+      errorMessage.value = '用户名不能超过15个字符'
       return
     }
     if (!password.value) {
       errorMessage.value = '请输入密码'
       return
     }
-    if (isRegister.value && password.value !== confirmPassword.value) {
-      errorMessage.value = '两次输入的密码不一致'
-      return
+    if (isRegister.value) {
+      if (password.value.length < 6) {
+        errorMessage.value = '密码至少需要6位'
+        return
+      }
+      if (!/[a-zA-Z]/.test(password.value) || !/\d/.test(password.value)) {
+        errorMessage.value = '密码必须同时包含字母和数字'
+        return
+      }
+      if (password.value !== confirmPassword.value) {
+        errorMessage.value = '两次输入的密码不一致'
+        return
+      }
     }
     loading.value = true
     try {

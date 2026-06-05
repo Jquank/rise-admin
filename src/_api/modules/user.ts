@@ -84,6 +84,13 @@ class User {
     })
   }
 
+  changePassword(data: {
+    oldPassword: string
+    newPassword: string
+  }): Promise<ResponseType<any>> {
+    return $http.post('/api/user/change-password', data)
+  }
+
   // ========== 管理端 ==========
 
   getPaginatedUsers(params?: {

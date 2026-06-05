@@ -2,9 +2,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { ElNotification } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 // 创建axios实列
 const axiosConfig: AxiosRequestConfig = {
   baseURL: import.meta.env.VITE_HTTP_URL || '',
@@ -43,7 +40,7 @@ instance.interceptors.response.use(
     if (String(response.status).startsWith('4')) {
       if (response.status === 401) {
         localStorage.removeItem('token')
-        router.push('/login')
+        window.location.href = '/#/login'
       }
       ElMessage.error(response.data?.message || '请求失败')
     } else {
