@@ -64,8 +64,16 @@
         <el-card shadow="never">
           <template #header>
             <div class="card-header">
-              <span>🖼️ 生成历史 <span class="retention-hint">（图片保留3天，请尽快下载）</span></span>
+              <span
+                >🖼️ 生成历史
+                <span class="retention-hint"
+                  >（图片保留3天，请尽快下载）</span
+                ></span
+              >
               <div class="header-btns">
+                <el-button size="small" @click="handleDownloadAll"
+                  >下载全部</el-button
+                >
                 <el-button
                   size="small"
                   type="danger"
@@ -92,7 +100,7 @@
           <div v-else class="image-grid">
             <div v-for="record in records" :key="record.id" class="image-card">
               <el-image
-                :src="record.imageUrl"
+                :src="fullImgUrl(record.imageUrl)"
                 fit="cover"
                 class="grid-image"
                 lazy
@@ -260,8 +268,16 @@
     // handleGenerate 中从 refImageList 实时读取
   }
 
+  // 图片完整 URL（拼接 API 地址）
+  const imgBase = import.meta.env.VITE_HTTP_URL || ''
+  function fullImgUrl(path: string) {
+    if (path.startsWith('http')) return path
+    return imgBase + path
+  }
   // 全部图片预览列表
-  const allPreviewUrls = computed(() => records.value.map((r) => r.imageUrl))
+  const allPreviewUrls = computed(() =>
+    records.value.map((r) => fullImgUrl(r.imageUrl))
+  )
 
   // ===== 提示词弹窗 =====
   const promptDialogVisible = ref(false)
@@ -433,6 +449,18 @@
       'YYYYMMDD-HHmmss'
     )}.png`
     a.click()
+  }
+
+  async function handleDownloadAll() {
+    for (const r of records.value) {
+      const a = document.createElement('a')
+      a.href = fullImgUrl(r.imageUrl)
+      a.download = `ai-img-${dayjs(r.createdAt).format('YYYYMMDD-HHmmss')}.png`
+      a.click()
+      // 浏览器限制快速连续下载，每个间隔 300ms
+      await new Promise((r) => setTimeout(r, 300))
+    }
+    ElMessage.success(`正在下载 ${records.value.length} 张图片`)
   }
 
   // ===== 联动 =====
@@ -621,6 +649,7 @@
       :deep(.el-card) {
         max-height: 100%;
       }
+
     }
     .right {
       flex: 4;

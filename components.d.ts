@@ -62,6 +62,7 @@ declare module 'vue' {
     GridCollapse: typeof import('./src/components/GridCollapse.vue')['default']
     GridCollapseAuto: typeof import('./src/components/GridCollapseAuto.vue')['default']
     PageHeader: typeof import('./src/components/PageHeader.vue')['default']
+    PromptInput: typeof import('./src/components/PromptInput.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']

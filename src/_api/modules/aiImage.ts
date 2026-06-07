@@ -190,6 +190,14 @@ class AiImage {
   ): Promise<ResponseType<{ deleted: number }>> {
     return $http.delete('/api/ai-image/records', config)
   }
+
+  // ========== AI 润色/生成提示词 ==========
+  refinePrompt(
+    text?: string,
+    config: AxiosRequestConfig = {}
+  ): Promise<ResponseType<{ prompt: string }>> {
+    return $http.post('/api/ai-image/refine-prompt', { text }, config)
+  }
 }
 
 export const aiImageApi = new AiImage()

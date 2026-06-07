@@ -3,7 +3,8 @@ import {
   ElCheckbox,
   ElSlider,
   ElSelect,
-  ElRadioGroup
+  ElRadioGroup,
+  ElButton
 } from 'element-plus'
 import SelectObject from './components/r-select.vue'
 import Editor from './components/r-editor.vue'
@@ -26,5 +27,6 @@ export const compMap: Record<string, any> = {
   checkbox: ElCheckbox,
   radio: ElRadioGroup,
   editor: Editor,
-  slider: ElSlider
+  slider: ElSlider,
+  button: ElButton
 }

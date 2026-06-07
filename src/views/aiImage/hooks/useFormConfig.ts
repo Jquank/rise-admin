@@ -11,6 +11,7 @@ import type {
 } from '@/_api/modules/aiImage'
 import { type FormConfigItemType } from '@/lib/components/form'
 import CustomSizeInput from '@/components/CustomSizeInput.vue'
+import PromptInput from '@/components/PromptInput.vue'
 import {
   COUNT_OPTIONS,
   NANO_BANANA_ASPECT_RATIOS,
@@ -78,21 +79,16 @@ export function useFormConfig(deps: FormConfigDeps) {
           events: { change: onPromptChange }
         }
       },
-      // ---- 创意 ----
+      // ---- 创意（含 AI 润色按钮） ----
       {
         prop: 'prompt',
         label: '创意',
-        type: 'input',
         required: true,
+        customType: PromptInput,
         colNumber: 1,
-        compConfig: {
-          type: 'textarea',
-          rows: 8,
-          placeholder: '输入画面描述（2048字符以内）',
-          showWordLimit: true,
-          maxlength: 2048
-        }
+        compConfig: {}
       },
+
       // ---- 尺寸（Nano Banana 显示比例 + 分辨率） ----
       ...(s.nanoSize
         ? [

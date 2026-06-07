@@ -54,9 +54,9 @@
               v-for="slot in item?.itemConfig?.slots || []"
               :key="slot.name"
               v-slot:[slot.name]>
-              <div
-                v-if="slot.content?.type === 'text'"
-                v-text="slot.content.value"></div>
+              <template v-if="slot.content?.type === 'text'">{{
+                slot.content.value
+              }}</template>
               <div
                 v-else-if="slot.content?.type === 'html'"
                 v-html="slot.content.value"></div>
@@ -82,15 +82,16 @@
               }"
               v-model="formData[item.prop]"
               @focus="compFocus(item)"
-              style="width: 100%">
+              :style="{ width: '100%', ...item.compConfig?.style }"
+              class="r-form-comp">
               <!-- 处理组件插槽，支持text,html,组件 -->
               <template
                 v-for="slot in item.compConfig?.slots || []"
                 :key="slot.name"
                 v-slot:[slot.name]>
-                <div
-                  v-if="slot.content?.type === 'text'"
-                  v-text="slot.content.value"></div>
+                <template v-if="slot.content?.type === 'text'">{{
+                  slot.content.value
+                }}</template>
                 <div
                   v-else-if="slot.content?.type === 'html'"
                   v-html="slot.content.value"></div>
@@ -468,6 +469,7 @@
         return prev
       }, {})
   })
+  console.log(rules.value)
   const labelTooltipVisibleArr = ref<Record<string, { visible: boolean }>>({})
   watch(
     () => props.config.map((c) => c.prop),
@@ -521,6 +523,9 @@
     }
     .slot-el-row {
       width: 100%;
+      .r-form-comp {
+        width: 100%;
+      }
       // align-items: end;
       & > .el-col {
         margin-bottom: v-bind('props.showLastCol?"12px":"0px"');
